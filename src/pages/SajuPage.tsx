@@ -497,16 +497,6 @@ export default function SajuPage() {
 
                     <div className="input-row">
                       <label>
-                        <span>{lang === 'ko' ? '달력' : 'Calendar'}</span>
-                        <select
-                          value={calendarType}
-                          onChange={(event) => setCalendarType(event.target.value as 'solar' | 'lunar')}
-                        >
-                          <option value="solar">{lang === 'ko' ? '양력' : 'Solar'}</option>
-                          <option value="lunar">{lang === 'ko' ? '음력' : 'Lunar'}</option>
-                        </select>
-                      </label>
-                      <label>
                         <span>{lang === 'ko' ? '성별' : 'Gender'}</span>
                         <select
                           value={gender}
@@ -515,6 +505,16 @@ export default function SajuPage() {
                           <option value="male">{lang === 'ko' ? '남성' : 'Male'}</option>
                           <option value="female">{lang === 'ko' ? '여성' : 'Female'}</option>
                           <option value="other">{lang === 'ko' ? '기타' : 'Other'}</option>
+                        </select>
+                      </label>
+                      <label>
+                        <span>{lang === 'ko' ? '달력' : 'Calendar'}</span>
+                        <select
+                          value={calendarType}
+                          onChange={(event) => setCalendarType(event.target.value as 'solar' | 'lunar')}
+                        >
+                          <option value="solar">{lang === 'ko' ? '양력' : 'Solar'}</option>
+                          <option value="lunar">{lang === 'ko' ? '음력' : 'Lunar'}</option>
                         </select>
                       </label>
                     </div>
@@ -534,28 +534,27 @@ export default function SajuPage() {
                       </div>
                     </div>
 
-                    <div className="birth-split-container">
-                      <span className="label-text">{lang === 'ko' ? '출생시간' : 'Birth Time'}</span>
-                      <div className="split-inputs time-inputs">
-                        <select value={birthHourBranch} onChange={(e) => setBirthHourBranch(e.target.value)} disabled={timeUnknown}>
-                          {branches.map(b => (
-                            <option key={b} value={b}>
-                              {b}시 ({branchIntervalMap[b]})
-                            </option>
-                          ))}
-                        </select>
-                        <label className="checkbox-line compact">
-                          <input
-                            type="checkbox"
-                            checked={timeUnknown}
-                            onChange={(event) => setTimeUnknown(event.target.checked)}
-                          />
-                          <span>{lang === 'ko' ? '모름' : 'N/A'}</span>
-                        </label>
-                      </div>
-                    </div>
-
                     <div className="input-row">
+                      <div className="birth-split-container">
+                        <span className="label-text">{lang === 'ko' ? '출생시간' : 'Birth Time'}</span>
+                        <div className="split-inputs time-inputs">
+                          <select value={birthHourBranch} onChange={(e) => setBirthHourBranch(e.target.value)} disabled={timeUnknown}>
+                            {branches.map(b => (
+                              <option key={b} value={b}>
+                                {b}시 ({branchIntervalMap[b]})
+                              </option>
+                            ))}
+                          </select>
+                          <label className="checkbox-line compact">
+                            <input
+                              type="checkbox"
+                              checked={timeUnknown}
+                              onChange={(event) => setTimeUnknown(event.target.checked)}
+                            />
+                            <span>{lang === 'ko' ? '모름' : 'N/A'}</span>
+                          </label>
+                        </div>
+                      </div>
                       <label>
                         <span>{lang === 'ko' ? '혈액형' : 'Blood Type'}</span>
                         <select
@@ -569,7 +568,9 @@ export default function SajuPage() {
                           <option value="AB">AB</option>
                         </select>
                       </label>
+                    </div>
 
+                    <div className="input-row">
                       <label>
                         <span>{lang === 'ko' ? '별자리(자동)' : 'Zodiac (Auto)'}</span>
                         <input
@@ -580,9 +581,6 @@ export default function SajuPage() {
                           style={{ background: 'rgba(0,0,0,0.05)', cursor: 'not-allowed' }}
                         />
                       </label>
-                    </div>
-
-                    <div className="input-row">
                       <label>
                         <span>{lang === 'ko' ? '취미' : 'Hobby'}</span>
                         <input
@@ -592,16 +590,17 @@ export default function SajuPage() {
                           placeholder={lang === 'ko' ? "예: 골프, 테니스" : "e.g. Golf"}
                         />
                       </label>
-                      <label>
-                        <span>{lang === 'ko' ? '추가 질문' : 'Additional Questions'}</span>
-                        <input
-                          type="text"
-                          value={notes}
-                          onChange={(event) => setNotes(event.target.value)}
-                          placeholder={lang === 'ko' ? "예: 2026년 이직운" : "e.g. Career in 2026"}
-                        />
-                      </label>
                     </div>
+
+                    <label className="full">
+                      <span>{lang === 'ko' ? '추가 질문' : 'Additional Questions'}</span>
+                      <input
+                        type="text"
+                        value={notes}
+                        onChange={(event) => setNotes(event.target.value)}
+                        placeholder={lang === 'ko' ? "예: 2026년 이직운" : "e.g. Career in 2026"}
+                      />
+                    </label>
 
                     <div className="actions">
                       <button type="submit" disabled={isLoading} className={isLoading ? 'loading' : 'btn-primary'}>
