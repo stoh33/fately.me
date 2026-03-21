@@ -9,6 +9,7 @@ body {
   font-family: "Cormorant Garamond", "Noto Sans KR", serif;
   background: #e7d9c0;
   color: #2f2518;
+  overflow-x: hidden;
 }
 
 #root {
@@ -39,7 +40,7 @@ legend {
   position: sticky;
   top: 0;
   z-index: 100;
-  padding: 1rem 0;
+  padding: 0.75rem 0;
 }
 
 .header-container {
@@ -57,6 +58,7 @@ legend {
   font-size: 1.5rem;
   color: #2f2518;
   text-decoration: none;
+  flex-shrink: 0;
 }
 
 .header-nav {
@@ -70,10 +72,73 @@ legend {
   font-size: 0.9rem;
   font-weight: 500;
   transition: color 0.2s;
+  white-space: nowrap;
 }
 
 .header-nav a:hover {
   color: #8b6d4d;
+}
+
+.menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  color: #2f2518;
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+@media (max-width: 640px) {
+  .header-container {
+    padding: 0 1rem;
+  }
+
+  .site-logo {
+    font-size: 1.25rem;
+  }
+
+  .menu-toggle {
+    display: block;
+  }
+
+  .header-nav {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    background: rgba(255, 255, 255, 0.97);
+    backdrop-filter: blur(12px);
+    padding: 12px 1.5rem 16px;
+    gap: 0;
+    border-bottom: 1px solid rgba(47, 37, 24, 0.1);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  }
+
+  .header-nav.open {
+    display: flex;
+  }
+
+  .header-nav a {
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(47, 37, 24, 0.06);
+    font-size: 1rem;
+  }
+
+  .header-nav a:last-child {
+    border-bottom: none;
+  }
+
+  .cookie-banner {
+    padding: 12px !important;
+  }
+
+  .cookie-banner .text-sm {
+    font-size: 0.8rem !important;
+  }
 }
 
 /* Footer Styles */

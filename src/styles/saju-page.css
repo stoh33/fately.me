@@ -10,13 +10,17 @@
   min-height: 100vh;
   background: #f2e7d2;
   color: #2d2115;
+  overflow-x: hidden;
+  width: 100%;
 }
 
 .saju-wrap {
   max-width: 1600px;
   margin: 0 auto;
   padding: 40px 24px 60px;
-  display: grid;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   gap: 24px;
 }
 
@@ -26,6 +30,7 @@
   padding: 40px 20px;
   background: linear-gradient(135deg, rgba(149, 105, 62, 0.1), rgba(116, 74, 40, 0.05));
   border-radius: 24px;
+  width: 100%;
 }
 
 .hero-image-container {
@@ -67,12 +72,13 @@
   border-radius: 24px;
   padding: 24px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04);
+  width: 100%;
 }
 
 .saju-form {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 16px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
 }
 
 .saju-form label {
@@ -541,6 +547,26 @@
   font-weight: 500;
 }
 
+/* Mobile: single column, centered */
+.saju-main-grid {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  width: 100%;
+  max-width: 600px;
+}
+
+.saju-main-grid .grid-left,
+.saju-main-grid .grid-right {
+  width: 100%;
+}
+
+.saju-main-grid.centered .grid-right {
+  display: none;
+}
+
+/* Desktop: two columns */
 @media (min-width: 1024px) {
   .saju-main-grid {
     display: grid;
@@ -548,6 +574,7 @@
     gap: 32px;
     align-items: start;
     justify-content: center;
+    max-width: 1600px;
   }
 
   .saju-main-grid.centered {
@@ -650,9 +677,13 @@
     padding: 16px 12px;
   }
 
+  .saju-wrap {
+    padding: 24px 16px 40px;
+  }
+
   .saju-hero {
     padding: 30px 16px;
-    margin-bottom: 24px;
+    margin-bottom: 16px;
   }
 
   .hero-image-container {
@@ -661,12 +692,22 @@
   }
 
   .saju-card {
-    padding: 20px;
+    padding: 20px 16px;
     border-radius: 20px;
+  }
+
+  .input-row {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
   }
 
   .split-inputs {
     gap: 6px;
+  }
+
+  .split-inputs select {
+    font-size: 0.9rem;
+    padding: 10px 8px;
   }
 
   .form-group {
@@ -706,5 +747,85 @@
 
   .saju-hanja {
     font-size: 1.25rem;
+  }
+
+  .saju-info-section {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .info-card {
+    padding: 16px;
+    border-radius: 12px;
+  }
+
+  .element-chip {
+    min-width: 100px;
+    padding: 8px 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .saju-wrap {
+    padding: 16px 12px 32px;
+  }
+
+  .saju-hero {
+    padding: 24px 12px;
+    margin-bottom: 12px;
+    border-radius: 16px;
+  }
+
+  .hero-image-container {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 14px;
+  }
+
+  .saju-title {
+    font-size: 1.4rem;
+  }
+
+  .saju-subtitle {
+    font-size: 0.9rem;
+  }
+
+  .saju-card {
+    padding: 16px 12px;
+    border-radius: 16px;
+  }
+
+  .input-row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .split-inputs {
+    gap: 4px;
+  }
+
+  .split-inputs select {
+    font-size: 0.85rem;
+    padding: 10px 6px;
+  }
+
+  .saju-form input,
+  .saju-form select {
+    padding: 10px 12px;
+    font-size: 0.95rem;
+  }
+
+  .actions button.btn-primary {
+    padding: 14px;
+    font-size: 1rem;
+  }
+
+  .report-content {
+    padding: 16px 12px;
+    border-radius: 12px;
+  }
+
+  .no-report-placeholder {
+    padding: 40px 16px;
   }
 }
