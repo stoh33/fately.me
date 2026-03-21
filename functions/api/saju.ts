@@ -1,4 +1,4 @@
-import { computeSaju, getZodiacSign } from '../lib/saju-calculator'
+import { computeSaju, getZodiacSign, type CalendarType } from '../lib/saju-calculator'
 
 type PagesContext<Env> = {
   request: Request
@@ -27,13 +27,7 @@ function buildCorsHeaders(origin: string | null, allowedOrigins?: string) {
   return { 'Access-Control-Allow-Origin': 'null' }
 }
 
-function getEnvValue(obj: unknown, target: string) {
-  if (!obj || typeof obj !== 'object') return null
-  const record = obj as Record<string, string | undefined>
-  if (record[target]) return record[target] as string
-  const foundKey = Object.keys(record).find((k) => k.trim().toUpperCase() === target.toUpperCase())
-  return foundKey ? (record[foundKey] as string) : null
-}
+
 
 async function callOpenAI(apiKey: string, model: string, systemInstruction: string, userPrompt: string) {
   const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -52,10 +46,10 @@ async function callOpenAI(apiKey: string, model: string, systemInstruction: stri
     }),
   })
   if (!response.ok) {
-    const error = (await response.json()) as any
+    const error = (await response.json()) as Record<string, Record<string, string>>
     throw new Error(error?.error?.message || 'OpenAI API request failed')
   }
-  const data = (await response.json()) as any
+  const data = (await response.json()) as Record<string, Array<Record<string, Record<string, string>>>>
   return data?.choices?.[0]?.message?.content?.trim() || ''
 }
 
@@ -69,7 +63,7 @@ export const onRequestOptions: PagesFunction<Env> = async ({ request, env }) => 
 
 export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
   const origin = request.headers.get('Origin')
-  let body: any
+  let body: Record<string, string>
   try {
     body = await request.json()
   } catch {
@@ -88,13 +82,13 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
     })
   }
 
-  let computed: any
+  let computed: ReturnType<typeof computeSaju>
   try {
     computed = computeSaju({
       birthDate: `${body.birthYear}-${String(body.birthMonth).padStart(2, '0')}-${String(body.birthDay).padStart(2, '0')}`,
       birthHourBranch: body.birthHour,
       timeUnknown: !body.birthHour,
-      calendarType: body.birthCalendar || 'solar',
+      calendarType: (body.birthCalendar || 'solar') as CalendarType,
       timezone: 'Asia/Seoul',
     })
   } catch {
@@ -103,7 +97,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
 
   const zodiacData = getZodiacSign(
     `${body.birthYear}-${String(body.birthMonth).padStart(2, '0')}-${String(body.birthDay).padStart(2, '0')}`,
-    body.birthCalendar || 'solar'
+    (body.birthCalendar || 'solar') as CalendarType
   )
   const zodiacKo = zodiacData.ko
   const currentYear = new Date().getFullYear()
@@ -194,7 +188,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
         },
       },
     )
-  } catch (err: any) {
+  } catch (err: unknown) {
     const detail = err instanceof Error ? err.message : String(err)
     return new Response(JSON.stringify({ error: detail }), {
       status: 502,

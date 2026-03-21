@@ -1,4 +1,4 @@
-import { useState, useEffect, type ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import Header from './Header';
 import Footer from './Footer';
 import { Link } from 'react-router-dom';
@@ -8,14 +8,13 @@ interface LayoutProps {
 }
 
 export default function Layout({ children }: LayoutProps) {
-  const [showCookieBanner, setShowCookieBanner] = useState(false);
-
-  useEffect(() => {
-    const consent = localStorage.getItem('cookie-consent');
-    if (!consent) {
-      setShowCookieBanner(true);
+  const [showCookieBanner, setShowCookieBanner] = useState(() => {
+    try {
+      return !localStorage.getItem('cookie-consent');
+    } catch {
+      return false;
     }
-  }, []);
+  });
 
   const acceptCookies = () => {
     localStorage.setItem('cookie-consent', 'accepted');

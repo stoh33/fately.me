@@ -189,7 +189,6 @@ export function computeSaju(input: SajuInput): SajuComputation {
   
   const addPillarElements = (gan: string, zhi: string) => {
     const stem = STEM_HANJA_TO_HANGUL[gan]
-    const branch = BRANCH_HANJA_TO_HANGUL[zhi]
     elementCount[STEM_ELEMENT[stem]] += 1
     elementCount[BRANCH_ELEMENT[zhi]] += 1
   }
@@ -232,20 +231,7 @@ export function getSexagenaryYear(year: number) {
   return lunar.getYearInGanZhi()
 }
 
-const ZODIAC_MAP: Record<string, { en: string; ko: string }> = {
-  '白羊': { en: 'Aries', ko: '양자리' },
-  '金牛': { en: 'Taurus', ko: '황소자리' },
-  '双子': { en: 'Gemini', ko: '쌍둥이자리' },
-  '巨蟹': { en: 'Cancer', ko: '게자리' },
-  '狮子': { en: 'Leo', ko: '사자자리' },
-  '处女': { en: 'Virgo', ko: '처녀자리' },
-  '天秤': { en: 'Libra', ko: '천칭자리' },
-  '天蝎': { en: 'Scorpio', ko: '전갈자리' },
-  '射手': { en: 'Sagittarius', ko: '사수자리' },
-  '摩羯': { en: 'Capricorn', ko: '염소자리' },
-  '水瓶': { en: 'Aquarius', ko: '물병자리' },
-  '双鱼': { en: '双鱼', ko: '물고기자리' }, // Double checking '双鱼' mapping
-}
+
 
 // Update mapping to handle the full name returned by getXingZuo() which usually includes '座'
 const ZODIAC_FULL_MAP: Record<string, { en: string; ko: string }> = {

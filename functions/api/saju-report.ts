@@ -1,4 +1,4 @@
-import { computeSaju, getSexagenaryYear, getZodiacSign } from '../lib/saju-calculator'
+import { computeSaju, getSexagenaryYear, getZodiacSign, type CalendarType } from '../lib/saju-calculator'
 
 type PagesContext<Env> = {
   request: Request
@@ -38,13 +38,7 @@ function jsonResponse(status: number, body: Record<string, unknown>, origin: str
   })
 }
 
-function getEnvValue(obj: unknown, target: string) {
-  if (!obj || typeof obj !== 'object') return null
-  const record = obj as Record<string, string | undefined>
-  if (record[target]) return record[target] as string
-  const foundKey = Object.keys(record).find((k) => k.trim().toUpperCase() === target.toUpperCase())
-  return foundKey ? (record[foundKey] as string) : null
-}
+
 
 async function callOpenAI(apiKey: string, model: string, systemInstruction: string, userPrompt: string) {
   const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -63,10 +57,10 @@ async function callOpenAI(apiKey: string, model: string, systemInstruction: stri
     }),
   })
   if (!response.ok) {
-    const error = (await response.json()) as any
+    const error = (await response.json()) as Record<string, Record<string, string>>
     throw new Error(error?.error?.message || 'OpenAI API request failed')
   }
-  const data = (await response.json()) as any
+  const data = (await response.json()) as Record<string, Array<Record<string, Record<string, string>>>>
   return data?.choices?.[0]?.message?.content?.trim() || ''
 }
 
@@ -81,20 +75,20 @@ export const onRequestOptions: PagesFunction<Env> = async ({ request, env }) => 
 export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
   const origin = request.headers.get('Origin')
 
-  let body: any
+  let body: Record<string, string>
   try {
     body = await request.json()
   } catch {
     return jsonResponse(400, { error: 'Invalid body' }, origin, env.ALLOWED_ORIGINS)
   }
 
-  let computed: any
+  let computed: ReturnType<typeof computeSaju>
   try {
     computed = computeSaju({
       birthDate: body.birthDate,
       birthTime: body.timeUnknown ? null : body.birthTime,
       timeUnknown: !!body.timeUnknown,
-      calendarType: body.calendarType || 'solar',
+      calendarType: (body.calendarType || 'solar') as CalendarType,
       timezone: body.timezone || 'Asia/Seoul',
     })
   } catch {
@@ -163,7 +157,7 @@ ${body.notes ? `### 6. 추가 질문 답변
   const currentYear = new Date().getFullYear()
   const currentYearGanji = getSexagenaryYear(currentYear)
   
-  const zodiacData = getZodiacSign(body.birthDate, body.calendarType || 'solar')
+  const zodiacData = getZodiacSign(body.birthDate, (body.calendarType || 'solar') as CalendarType)
   const selectedZodiac =
     body.zodiacSign && body.zodiacSign !== 'auto' ? String(body.zodiacSign) : zodiacData.ko
 
@@ -213,7 +207,7 @@ ${body.notes ? `### 6. 추가 질문 답변
 - 성별: ${body.gender || '미상'}, 혈액형: ${body.bloodType || '미상'}
 - 별자리: ${zodiacData.ko} (계산기 패키지 결과)
 - 추가 질문/메모: ${body.notes || '없음'}
-사주원국 데이터: 년(${computed.year.stem}${computed.year.branch}), 월(${computed.month.stem}${computed.month.branch}), 일(${computed.day.stem}${computed.day.branch}), 시(${computed.hour.stem || '미상'}${computed.hour.branch || ''})
+사주원국 데이터: 년(${computed.year.stem}${computed.year.branch}), 월(${computed.month.stem}${computed.month.branch}), 일(${computed.day.stem}${computed.day.branch}), 시(${'unknown' in computed.hour ? '미상' : `${computed.hour.stem}${computed.hour.branch}`})
 오행 분포: 목(${computed.fiveElements.목.count}), 화(${computed.fiveElements.화.count}), 토(${computed.fiveElements.토.count}), 금(${computed.fiveElements.금.count}), 수(${computed.fiveElements.수.count})
 - 관심 취미: ${hobby}
 
@@ -269,7 +263,7 @@ ${body.notes ? `### 6. 추가 질문 답변
       origin,
       env.ALLOWED_ORIGINS,
     )
-  } catch (err: any) {
+  } catch (err: unknown) {
     const detail = err instanceof Error ? err.message : String(err)
     let msg = detail || 'OPENAI API 호출 중 오류가 발생했습니다.'
     if (detail.includes('429')) msg = 'API 할당량 초과되었습니다. 잠시 후 다시 시도하세요.'

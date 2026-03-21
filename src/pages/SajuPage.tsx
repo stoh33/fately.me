@@ -247,10 +247,10 @@ export default function SajuPage() {
   const days = useMemo(() => Array.from({ length: 31 }, (_, i) => String(i + 1).padStart(2, '0')), [])
   const branches = useMemo(() => ['자', '축', '인', '묘', '진', '사', '오', '미', '신', '유', '술', '해'], [])
   
-  const branchTimeMap: Record<string, string> = {
+  const branchTimeMap = useMemo<Record<string, string>>(() => ({
     '자': '00:00', '축': '02:00', '인': '04:00', '묘': '06:00', '진': '08:00', '사': '10:00',
     '오': '12:00', '미': '14:00', '신': '16:00', '유': '18:00', '술': '20:00', '해': '22:00'
-  }
+  }), [])
 
   const branchIntervalMap: Record<string, string> = {
     '자': '23:30 ~ 01:29', '축': '01:30 ~ 03:29', '인': '03:30 ~ 05:29', '묘': '05:30 ~ 07:29',
@@ -264,7 +264,7 @@ export default function SajuPage() {
 
   useEffect(() => {
     setBirthTime(branchTimeMap[birthHourBranch] || '12:00')
-  }, [birthHourBranch])
+  }, [birthHourBranch, branchTimeMap])
 
   // Auto-calculate Zodiac sign when month or day changes
   useEffect(() => {
@@ -412,7 +412,7 @@ export default function SajuPage() {
 
       try {
         if ('showSaveFilePicker' in window) {
-          const handle = await (window as any).showSaveFilePicker({
+          const handle = await (window as unknown as Record<string, (opts: unknown) => Promise<FileSystemFileHandle>>).showSaveFilePicker({
             suggestedName: `fately-saju-${clientName || 'result'}.png`,
             types: [{
               description: 'PNG Image',
@@ -424,8 +424,8 @@ export default function SajuPage() {
           await writable.close();
           return;
         }
-      } catch (e: any) {
-        if (e.name === 'AbortError') return;
+      } catch (e: unknown) {
+        if (e && typeof e === 'object' && 'name' in e && (e as { name: string }).name === 'AbortError') return;
         console.warn('File System Access API failed, falling back...', e);
       }
 
