@@ -3,10 +3,10 @@ import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import './styles/index.css'
 import SajuPage from './pages/SajuPage.tsx'
-import PrivacyPolicy from './pages/PrivacyPolicy.tsx'
-import TermsOfService from './pages/TermsOfService.tsx'
-import AboutUs from './pages/AboutUs.tsx'
-import ContactUs from './pages/ContactUs.tsx'
+import PrivacyPolicy from './pages/policy/PrivacyPolicy.tsx'
+import TermsOfService from './pages/policy/TermsOfService.tsx'
+import AboutUs from './pages/policy/AboutUs.tsx'
+import ContactUs from './pages/policy/ContactUs.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

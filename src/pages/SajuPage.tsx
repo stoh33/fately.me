@@ -4,47 +4,18 @@ import DOMPurify from 'dompurify'
 import html2canvas from 'html2canvas'
 import Layout from '../components/Layout'
 import AdSense from '../components/AdSense'
+import SajuWongukTable from '../components/SajuWongukTable'
+import type { 
+  BloodType, 
+  ZodiacSign, 
+  ElementKeyKo, 
+  FourPillars, 
+  FiveElementsMeta, 
+  ReportResponse 
+} from '../types/saju'
 import '../styles/saju-page.css'
 
-type BloodType = 'A' | 'B' | 'O' | 'AB' | 'unknown'
-type ZodiacSign = string
-
-
-type ElementKey = '목' | '화' | '토' | '금' | '수'
-
-type HideGanItem = { hanja: string; hangul: string; element: ElementKey }
-
-type PillarValue = {
-  stem: string
-  stemHanja: string
-  stemElement: ElementKey
-  branch: string
-  branchHanja: string
-  branchElement: ElementKey
-  symbol: string
-  hideGan: HideGanItem[]
-}
-
-type FourPillars = {
-  year: PillarValue
-  month: PillarValue
-  day: PillarValue
-  hour: PillarValue | { unknown: true; label: string }
-}
-
-type ReportResponse = {
-  reportMarkdown?: string
-  meta?: {
-    fourPillars?: FourPillars
-    fiveElements?: Record<string, { count?: number; strength?: string }>
-    generatedAt?: string
-  }
-  error?: string
-  detail?: string
-}
-
 const STORAGE_KEY = 'sajuReport:last'
-type FiveElementsMeta = Record<ElementKey, { count: number; strength: string }>
 
 /**
  * Calculates Western Zodiac sign based on month and day
@@ -70,7 +41,7 @@ function normalizeFiveElements(
   raw: Record<string, { count?: number; strength?: string }> | undefined,
 ): FiveElementsMeta | null {
   if (!raw) return null
-  const keys: ElementKey[] = ['목', '화', '토', '금', '수']
+  const keys: ElementKeyKo[] = ['목', '화', '토', '금', '수']
   const result = {} as FiveElementsMeta
   for (const key of keys) {
     const item = raw[key]
@@ -80,90 +51,6 @@ function normalizeFiveElements(
     result[key] = { count: item.count, strength: item.strength }
   }
   return result
-}
-
-const getElementClass = (element: string) => {
-  switch (element) {
-    case '목': return 'wood'
-    case '화': return 'fire'
-    case '토': return 'earth'
-    case '금': return 'metal'
-    case '수': return 'water'
-    default: return ''
-  }
-}
-
-function HanjaSpan({ hanja, element }: { hanja: string; element: string }) {
-  const colorClass = getElementClass(element)
-  return <span className={`hanja-styled ${colorClass}`}>{hanja}</span>
-}
-
-function SajuWongukTable({ fourPillars, lang }: { fourPillars: FourPillars; lang: 'ko' | 'en' }) {
-  const pillars = [
-    { label: lang === 'ko' ? '시주' : 'Hour', value: fourPillars.hour },
-    { label: lang === 'ko' ? '일주' : 'Day', value: fourPillars.day },
-    { label: lang === 'ko' ? '월주' : 'Month', value: fourPillars.month },
-    { label: lang === 'ko' ? '년주' : 'Year', value: fourPillars.year },
-  ]
-
-  return (
-    <div className="saju-wonguk-container">
-      <h3>{lang === 'ko' ? '1. 사주원국 (四柱元局)' : '1. Four Pillars Grid'}</h3>
-      <table className="saju-wonguk-table">
-        <thead>
-          <tr>
-            {pillars.map((p) => (
-              <th key={p.label}>{p.label}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            {pillars.map((p, i) => {
-              if ('unknown' in p.value) {
-                return <td key={i} rowSpan={2} className="unknown-cell">{p.value.label}</td>
-              }
-              return (
-                <td key={i} className={`bg-${getElementClass(p.value.stemElement)}`}>
-                  <div className="saju-wonguk-cell">
-                    <span className="saju-hanja">{p.value.stemHanja}</span>
-                    <span className="saju-hangul">{p.value.stem}</span>
-                  </div>
-                </td>
-              )
-            })}
-          </tr>
-          <tr>
-            {pillars.map((p, i) => {
-              if ('unknown' in p.value) return null
-              return (
-                <td key={i} className={`bg-${getElementClass(p.value.branchElement)}`}>
-                  <div className="saju-wonguk-cell">
-                    <span className="saju-hanja">{p.value.branchHanja}</span>
-                    <span className="saju-hangul">{p.value.branch}</span>
-                  </div>
-                </td>
-              )
-            })}
-          </tr>
-          <tr>
-            {pillars.map((p, i) => {
-              if ('unknown' in p.value) return <td key={i} className="unknown-cell">-</td>
-              return (
-                <td key={i}>
-                  <div className="saju-hide-gan-list">
-                    {p.value.hideGan.map((hg, idx) => (
-                      <HanjaSpan key={idx} hanja={hg.hanja} element={hg.element} />
-                    ))}
-                  </div>
-                </td>
-              )
-            })}
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  )
 }
 
 function SajuInfo({ lang }: { lang: 'ko' | 'en' }) {
@@ -235,6 +122,7 @@ export default function SajuPage() {
   
   const [copied, setCopied] = useState(false)
   const [isCapturing, setIsCapturing] = useState(false)
+  const [isGlow, setIsGlow] = useState(false)
 
   // Split Date/Time States
   const [birthYear, setBirthYear] = useState('1995')
@@ -453,12 +341,16 @@ export default function SajuPage() {
             <div className="hero-image-container">
               <img 
                 src="/oh_saju_branding.png" 
-                alt="오선생님의 사주해석 브랜드 이미지" 
+                alt={lang === 'ko' ? "오선생님의 사주해석 브랜드 이미지" : "Master Oh's Saju Analysis Branding"} 
                 className="hero-branding-img"
               />
             </div>
-            <h1 className="saju-title">오선생님의 사주해석</h1>
-            <p className="saju-subtitle">명리학 기반으로 사주를 분석하고, 혈액형·별자리 성향을 종합하여 MBTI를 추정합니다.</p>
+            <h1 className="saju-title">{lang === 'ko' ? '오선생님의 사주해석' : "Master Oh's Saju Analysis"}</h1>
+            <p className="saju-subtitle">
+              {lang === 'ko' 
+                ? '명리학 기반으로 사주를 분석하고, 혈액형·별자리 성향을 종합하여 MBTI를 추정합니다.' 
+                : 'Precise Saju analysis based on traditional philosophy, with integrated Blood Type and Zodiac insights.'}
+            </p>
             
             <div className="lang-toggle" role="group" aria-label="Language" style={{ marginTop: '24px' }}>
               <button
@@ -608,10 +500,10 @@ export default function SajuPage() {
                       </button>
                       <div className="sub-actions">
                         <button type="button" className="ghost" onClick={handleDownloadImage} disabled={!reportMarkdown || isCapturing}>
-                          {isCapturing ? '📸' : '🖼️ 이미지'}
+                          {isCapturing ? '📸' : (lang === 'ko' ? '🖼️ 이미지' : '🖼️ Image')}
                         </button>
                         <button type="button" className="ghost" onClick={handleCopy} disabled={!reportMarkdown}>
-                          {copied ? '✅' : '📋 복사'}
+                          {copied ? '✅' : (lang === 'ko' ? '📋 복사' : '📋 Copy')}
                         </button>
                       </div>
                     </div>
@@ -624,7 +516,12 @@ export default function SajuPage() {
 
             <div className="grid-right">
 
-              <section className="report-panel" ref={reportRef}>
+              <section 
+                className={`report-panel ${isGlow ? 'glow' : ''}`} 
+                ref={reportRef}
+                onClick={() => setIsGlow(!isGlow)}
+                title={lang === 'ko' ? '클릭하여 오라 효과 토글' : 'Click to toggle aura effect'}
+              >
                 <h2>{lang === 'ko' ? '사주 분석 리포트' : 'Analysis Report'}</h2>
             
                 {reportMarkdown && <AdSense client="ca-pub-8118093904469504" slot="1122334455" />}
@@ -636,20 +533,31 @@ export default function SajuPage() {
                 <div className="elements-bar" aria-label="오행 분포 색상 요약">
                   {(
                     [
-                      ['목', 'wood'],
-                      ['화', 'fire'],
-                      ['토', 'earth'],
-                      ['금', 'metal'],
-                      ['수', 'water'],
-                    ] as Array<[ElementKey, string]>
-                  ).map(([key, klass]) => (
-                    <div key={key} className={`element-chip ${klass}`}>
-                      <strong>{key}</strong>
-                      <span>
-                        {fiveElements[key].count} / {fiveElements[key].strength}
-                      </span>
-                    </div>
-                  ))}
+                      ['목', 'wood', 'Wood'],
+                      ['화', 'fire', 'Fire'],
+                      ['토', 'earth', 'Earth'],
+                      ['금', 'metal', 'Metal'],
+                      ['수', 'water', 'Water'],
+                    ] as Array<[ElementKeyKo, string, string]>
+                  ).map(([key, klass, enLabel]) => {
+                    const strengthMap: Record<string, string> = {
+                      '강함': 'Strong',
+                      '중간': 'Neutral',
+                      '약함': 'Weak',
+                      '부족': 'Lacking'
+                    };
+                    const strength = fiveElements[key].strength;
+                    const displayStrength = lang === 'ko' ? strength : (strengthMap[strength] || strength);
+
+                    return (
+                      <div key={key} className={`element-chip ${klass}`}>
+                        <strong>{lang === 'ko' ? key : enLabel}</strong>
+                        <span>
+                          {fiveElements[key].count} / {displayStrength}
+                        </span>
+                      </div>
+                    );
+                  })}
                 </div>
               ) : null}
 

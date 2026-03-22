@@ -122,71 +122,18 @@ const copy = {
   },
 }
 
-type ElementKeyKo = '목' | '화' | '토' | '금' | '수'
-type HideGanItem = { hanja: string; hangul: string; element: ElementKeyKo }
-
-type PillarValue = {
-  stem: string
-  stemHanja: string
-  stemElement: ElementKeyKo
-  branch: string
-  branchHanja: string
-  branchElement: ElementKeyKo
-  symbol: string
-  hideGan: HideGanItem[]
-}
-
-type FourPillars = {
-  year: PillarValue
-  month: PillarValue
-  day: PillarValue
-  hour: PillarValue | { unknown: true; label: string }
-}
-
-type ApiResponse = {
-  report?: string
-  meta?: {
-    fourPillars?: FourPillars
-    fiveElements?: Record<string, { count?: number; strength?: string }>
-    generatedAt?: string
-  }
-  error?: string
-  detail?: string
-}
-
-type ElementKey = 'Wood' | 'Fire' | 'Earth' | 'Metal' | 'Water'
-
-type Pillar = {
-  gan: string
-  ji: string
-  hidden?: string[]
-  element: string
-}
-
-type SajuChartData = {
-  pillars: {
-    year: Pillar
-    month: Pillar
-    day: Pillar
-    hour: Pillar
-  }
-  fiveElements: Record<string, number>
-  yongsin: string
-  gisin: string
-  daewoon: Array<{ age: number; gan: string; ji: string; current?: boolean }>
-  lifeSeason: string
-  lifeSeasonAge: {
-    spring: [number, number]
-    summer: [number, number]
-    autumn: [number, number]
-    winter: [number, number]
-  }
-}
+import SajuWongukTable from '../components/SajuWongukTable'
+import type { 
+  ApiResponse,
+  SajuChartData,
+  ElementKeyKo,
+  ElementKeyEn
+} from '../types/saju'
 
 const elementOrder = ['Wood', 'Fire', 'Earth', 'Metal', 'Water'] as const
 const elementOrderKo: ElementKeyKo[] = ['목', '화', '토', '금', '수']
 
-const elementLabels: Record<ElementKey, string> = {
+const elementLabels: Record<string, string> = {
   Wood: '목',
   Fire: '화',
   Earth: '토',
@@ -194,96 +141,12 @@ const elementLabels: Record<ElementKey, string> = {
   Water: '수',
 }
 
-const elementLabelsEn: Record<ElementKey, string> = {
+const elementLabelsEn: Record<string, string> = {
   Wood: 'Wood',
   Fire: 'Fire',
   Earth: 'Earth',
   Metal: 'Metal',
   Water: 'Water',
-}
-
-const getElementClass = (element: string) => {
-  switch (element) {
-    case '목': return 'wood'
-    case '화': return 'fire'
-    case '토': return 'earth'
-    case '금': return 'metal'
-    case '수': return 'water'
-    default: return ''
-  }
-}
-
-function HanjaSpan({ hanja, element }: { hanja: string; element: string }) {
-  const colorClass = getElementClass(element)
-  return <span className={`hanja-styled ${colorClass}`}>{hanja}</span>
-}
-
-function SajuWongukTable({ fourPillars, lang }: { fourPillars: FourPillars; lang: 'ko' | 'en' }) {
-  const pillars = [
-    { label: lang === 'ko' ? '시주' : 'Hour', value: fourPillars.hour },
-    { label: lang === 'ko' ? '일주' : 'Day', value: fourPillars.day },
-    { label: lang === 'ko' ? '월주' : 'Month', value: fourPillars.month },
-    { label: lang === 'ko' ? '년주' : 'Year', value: fourPillars.year },
-  ]
-
-  return (
-    <div className="saju-wonguk-container">
-      <h3>{lang === 'ko' ? '1. 사주원국 (四柱元局)' : '1. Four Pillars Grid'}</h3>
-      <table className="saju-wonguk-table">
-        <thead>
-          <tr>
-            {pillars.map((p) => (
-              <th key={p.label}>{p.label}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            {pillars.map((p, i) => {
-              if ('unknown' in p.value) {
-                return <td key={i} rowSpan={2} className="unknown-cell">{p.value.label}</td>
-              }
-              return (
-                <td key={i} className={`bg-${getElementClass(p.value.stemElement)}`}>
-                  <div className="saju-wonguk-cell">
-                    <span className="saju-hanja">{p.value.stemHanja}</span>
-                    <span className="saju-hangul">{p.value.stem}</span>
-                  </div>
-                </td>
-              )
-            })}
-          </tr>
-          <tr>
-            {pillars.map((p, i) => {
-              if ('unknown' in p.value) return null
-              return (
-                <td key={i} className={`bg-${getElementClass(p.value.branchElement)}`}>
-                  <div className="saju-wonguk-cell">
-                    <span className="saju-hanja">{p.value.branchHanja}</span>
-                    <span className="saju-hangul">{p.value.branch}</span>
-                  </div>
-                </td>
-              )
-            })}
-          </tr>
-          <tr>
-            {pillars.map((p, i) => {
-              if ('unknown' in p.value) return <td key={i} className="unknown-cell">-</td>
-              return (
-                <td key={i}>
-                  <div className="saju-hide-gan-list">
-                    {p.value.hideGan.map((hg, idx) => (
-                      <HanjaSpan key={idx} hanja={hg.hanja} element={hg.element} />
-                    ))}
-                  </div>
-                </td>
-              )
-            })}
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  )
 }
 
 const elementClassMap: Record<string, string> = {
@@ -350,10 +213,10 @@ const formatJi = (value: string) => {
   return value
 }
 
-const inferElementFromGanJi = (gan: string, ji: string): ElementKey => {
+const inferElementFromGanJi = (gan: string, ji: string): ElementKeyEn => {
   const koGan = gan.replace(/\(.*\)/, '')
   const koJi = ji.replace(/\(.*\)/, '')
-  const ganElementMap: Record<string, ElementKey> = {
+  const ganElementMap: Record<string, ElementKeyEn> = {
     갑: 'Wood',
     을: 'Wood',
     병: 'Fire',
@@ -365,7 +228,7 @@ const inferElementFromGanJi = (gan: string, ji: string): ElementKey => {
     임: 'Water',
     계: 'Water',
   }
-  const jiElementMap: Record<string, ElementKey> = {
+  const jiElementMap: Record<string, ElementKeyEn> = {
     자: 'Water',
     축: 'Earth',
     인: 'Wood',
@@ -409,7 +272,7 @@ const parseReport = (rawReport: string) => {
 }
 
 const normalizeElements = (fiveElements: Record<string, number>) => {
-  const normalized: Record<ElementKey, number> = {
+  const normalized: Record<ElementKeyEn, number> = {
     Wood: 0,
     Fire: 0,
     Earth: 0,
@@ -433,9 +296,9 @@ const normalizeElements = (fiveElements: Record<string, number>) => {
   return normalized
 }
 
-const normalizeElementKey = (value: string): ElementKey | null => {
+const normalizeElementKey = (value: string): ElementKeyEn | null => {
   if (!value) return null
-  if (elementOrder.includes(value as ElementKey)) return value as ElementKey
+  if (elementOrder.includes(value as ElementKeyEn)) return value as ElementKeyEn
   const koIndex = elementOrderKo.indexOf(value as ElementKeyKo)
   if (koIndex >= 0) {
     return elementOrder[koIndex]

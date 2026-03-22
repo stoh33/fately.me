@@ -47,13 +47,34 @@ Fately is a professional Saju (Korean Four Pillars) analysis application that pr
     - Added `SajuInfo` component to `SajuPage.tsx` to provide static high-value content for visitors before report generation.
     - Updated `saju-page.css` with styles for the new informative sections and placeholders.
 
-## Current Plan: AdSense Policy Compliance and Content Quality Improvement
-The project now strictly follows AdSense policies by ensuring ads are only served alongside meaningful publisher content and providing informative static content on landing pages.
+- **2026-03-21**:
+  - **ESLint & Stability Improvements**:
+    - Fixed 22+ ESLint errors in `saju-report.ts`, `saju.ts`, `saju-calculator.ts`.
+    - Removed unused code (`getEnvValue`, `ZODIAC_MAP`, etc.).
+    - Refactored `any` types to specific interfaces for better type safety.
+    - Improved `useEffect` dependency management in `SajuPage.tsx` and `Layout.tsx`.
+    - Updated `eslint.config.js` to exclude temporary worker files.
+  - **Mobile UI Fixes**:
+    - Fixed header navigation and centering issues on smaller screens.
+    - Optimized padding and form layouts for mobile devices.
+
+## Local Development
+To test the application locally with full API functionality (OpenAI integration), follow these steps:
+
+1. **Environment Variables**: Ensure a `.dev.vars` file exists in the root directory with the following content:
+   ```env
+   OPENAI_API_KEY=your_api_key_here
+   ```
+2. **Run Local Server**: Use the following command to start both the Vite dev server and Cloudflare Pages Functions locally:
+   ```bash
+   npm run dev:local
+   ```
+3. **Access the App**: Open your browser and navigate to the address provided by Wrangler (usually `http://localhost:8888`). The frontend will be proxied to the local functions, allowing you to test the complete flow.
+
+## Current Plan: Deployment and Verification
+Finalizing the deployment after major code quality improvements and mobile optimization.
 
 ### Completed Steps
-1. **Domain Update**: Replaced all occurrences of `fately.ai` with `fately.me` for SEO and canonical links.
-2. **Image Saving**: 
-   - Added `html2canvas` for client-side DOM capturing.
-   - Implemented `handleDownloadImage` with high-resolution scaling and custom padding for the exported image.
-   - Added "Save as Image" button to the main action area.
-3. **UI Optimization**: Updated CSS to ensure action buttons wrap correctly on small screens.
+1. **Code Refactoring**: Comprehensive fix for ESLint violations and type safety improvements.
+2. **Build Verification**: Success confirmed for both TypeScript compilation and Vite production build.
+3. **Mobile Optimization**: Verified responsiveness across various screen sizes.
