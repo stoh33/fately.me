@@ -800,6 +800,14 @@
   }
 }
 
+@media (max-width: 768px) {
+  .saju-page {
+    padding: 100px 15px 30px; /* Increased top padding for mobile */
+  }
+  .saju-hero {
+    padding: 20px 0 40px;
+  }
+}
 @media (max-width: 480px) {
   .saju-wrap {
     padding: 16px 12px 32px;

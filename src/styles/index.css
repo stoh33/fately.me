@@ -98,9 +98,15 @@ legend {
   border: none;
   cursor: pointer;
   padding: 8px;
-  color: #2f2518;
+.menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  padding: 8px;
+  color: var(--white); /* White for better visibility on dark header */
   font-size: 1.5rem;
   line-height: 1;
+  cursor: pointer;
 }
 
 @media (max-width: 640px) {
@@ -123,12 +129,12 @@ legend {
     left: 0;
     right: 0;
     flex-direction: column;
-    background: rgba(255, 255, 255, 0.97);
+    background: var(--primary); /* Midnight Blue background */
     backdrop-filter: blur(12px);
-    padding: 12px 1.5rem 16px;
+    padding: 12px 1.5rem 24px;
     gap: 0;
-    border-bottom: 1px solid rgba(47, 37, 24, 0.1);
-    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    border-bottom: 2px solid var(--secondary); /* Aurora Mint border */
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
   }
 
   .header-nav.open {
@@ -136,9 +142,11 @@ legend {
   }
 
   .header-nav a {
-    padding: 12px 0;
-    border-bottom: 1px solid rgba(47, 37, 24, 0.06);
-    font-size: 1rem;
+    padding: 16px 0;
+    border-bottom: 1px solid rgba(127, 255, 212, 0.15); /* Subtle Aurora Mint border */
+    font-size: 1.1rem;
+    color: var(--white) !important;
+    font-weight: 500;
   }
 
   .header-nav a:last-child {
