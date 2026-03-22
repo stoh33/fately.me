@@ -448,6 +448,18 @@ export default function SajuPage() {
                         </div>
                       </div>
                       <label>
+                        <span>{lang === 'ko' ? '취미' : 'Hobby'}</span>
+                        <input
+                          type="text"
+                          value={hobby}
+                          onChange={(event) => setHobby(event.target.value)}
+                          placeholder={lang === 'ko' ? "예: 골프, 테니스" : "e.g. Golf"}
+                        />
+                      </label>
+                    </div>
+
+                    <div className="input-row">
+                      <label>
                         <span>{lang === 'ko' ? '혈액형' : 'Blood Type'}</span>
                         <select
                           value={bloodType}
@@ -460,9 +472,6 @@ export default function SajuPage() {
                           <option value="AB">AB</option>
                         </select>
                       </label>
-                    </div>
-
-                    <div className="input-row">
                       <label>
                         <span>{lang === 'ko' ? '별자리(자동)' : 'Zodiac (Auto)'}</span>
                         <input
@@ -471,15 +480,6 @@ export default function SajuPage() {
                           readOnly
                           className="read-only-input"
                           style={{ background: 'rgba(0,0,0,0.05)', cursor: 'not-allowed' }}
-                        />
-                      </label>
-                      <label>
-                        <span>{lang === 'ko' ? '취미' : 'Hobby'}</span>
-                        <input
-                          type="text"
-                          value={hobby}
-                          onChange={(event) => setHobby(event.target.value)}
-                          placeholder={lang === 'ko' ? "예: 골프, 테니스" : "e.g. Golf"}
                         />
                       </label>
                     </div>

@@ -81,10 +81,11 @@ legend {
 .header-nav a {
   color: var(--white);
   text-decoration: none;
-  font-size: 0.9rem;
-  font-weight: 500;
+  font-size: 0.95rem; /* Slightly larger */
+  font-weight: 600; /* Bolder */
   transition: all 0.2s;
   white-space: nowrap;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3); /* Added for clarity */
 }
 
 .header-nav a:hover {
