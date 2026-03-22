@@ -639,6 +639,10 @@
   gap: 12px;
 }
 
+.input-row-date {
+  grid-template-columns: 1fr 2.5fr; /* Calendar is narrower, Date is wider */
+}
+
 .birth-split-container {
   display: flex;
   flex-direction: column;

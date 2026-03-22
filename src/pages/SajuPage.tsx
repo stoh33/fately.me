@@ -376,18 +376,17 @@ export default function SajuPage() {
               <section className="saju-card">
                 <form className="saju-form" onSubmit={handleSubmit}>
                   <div className="form-group">
-                    <label className="full">
-                      <span>{lang === 'ko' ? '이름' : 'Name'}</span>
-                      <input
-                        type="text"
-                        value={clientName}
-                        onChange={(event) => setClientName(event.target.value)}
-                        placeholder={lang === 'ko' ? "예: 김민준" : "e.g. John Doe"}
-                        required
-                      />
-                    </label>
-
                     <div className="input-row">
+                      <label>
+                        <span>{lang === 'ko' ? '이름' : 'Name'}</span>
+                        <input
+                          type="text"
+                          value={clientName}
+                          onChange={(event) => setClientName(event.target.value)}
+                          placeholder={lang === 'ko' ? "예: 김민준" : "e.g. John Doe"}
+                          required
+                        />
+                      </label>
                       <label>
                         <span>{lang === 'ko' ? '성별' : 'Gender'}</span>
                         <select
@@ -399,6 +398,9 @@ export default function SajuPage() {
                           <option value="other">{lang === 'ko' ? '기타' : 'Other'}</option>
                         </select>
                       </label>
+                    </div>
+
+                    <div className="input-row input-row-date">
                       <label>
                         <span>{lang === 'ko' ? '달력' : 'Calendar'}</span>
                         <select
@@ -409,20 +411,19 @@ export default function SajuPage() {
                           <option value="lunar">{lang === 'ko' ? '음력' : 'Lunar'}</option>
                         </select>
                       </label>
-                    </div>
-
-                    <div className="birth-split-container">
-                      <span className="label-text">{lang === 'ko' ? '생년월일' : 'Birth Date'}</span>
-                      <div className="split-inputs">
-                        <select value={birthYear} onChange={(e) => setBirthYear(e.target.value)}>
-                          {years.map(y => <option key={y} value={y}>{y}{lang === 'ko' ? '년' : ''}</option>)}
-                        </select>
-                        <select value={birthMonth} onChange={(e) => setBirthMonth(e.target.value)}>
-                          {months.map(m => <option key={m} value={m}>{m}{lang === 'ko' ? '월' : ''}</option>)}
-                        </select>
-                        <select value={birthDay} onChange={(e) => setBirthDay(e.target.value)}>
-                          {days.map(d => <option key={d} value={d}>{d}{lang === 'ko' ? '일' : ''}</option>)}
-                        </select>
+                      <div className="birth-split-container">
+                        <span className="label-text">{lang === 'ko' ? '생년월일' : 'Birth Date'}</span>
+                        <div className="split-inputs">
+                          <select value={birthYear} onChange={(e) => setBirthYear(e.target.value)}>
+                            {years.map(y => <option key={y} value={y}>{y}{lang === 'ko' ? '년' : ''}</option>)}
+                          </select>
+                          <select value={birthMonth} onChange={(e) => setBirthMonth(e.target.value)}>
+                            {months.map(m => <option key={m} value={m}>{m}{lang === 'ko' ? '월' : ''}</option>)}
+                          </select>
+                          <select value={birthDay} onChange={(e) => setBirthDay(e.target.value)}>
+                            {days.map(d => <option key={d} value={d}>{d}{lang === 'ko' ? '일' : ''}</option>)}
+                          </select>
+                        </div>
                       </div>
                     </div>
 
@@ -448,12 +449,13 @@ export default function SajuPage() {
                         </div>
                       </div>
                       <label>
-                        <span>{lang === 'ko' ? '취미' : 'Hobby'}</span>
+                        <span>{lang === 'ko' ? '별자리(자동)' : 'Zodiac (Auto)'}</span>
                         <input
                           type="text"
-                          value={hobby}
-                          onChange={(event) => setHobby(event.target.value)}
-                          placeholder={lang === 'ko' ? "예: 골프, 테니스" : "e.g. Golf"}
+                          value={zodiacSign}
+                          readOnly
+                          className="read-only-input"
+                          style={{ background: 'rgba(0,0,0,0.05)', cursor: 'not-allowed' }}
                         />
                       </label>
                     </div>
@@ -473,13 +475,12 @@ export default function SajuPage() {
                         </select>
                       </label>
                       <label>
-                        <span>{lang === 'ko' ? '별자리(자동)' : 'Zodiac (Auto)'}</span>
+                        <span>{lang === 'ko' ? '취미' : 'Hobby'}</span>
                         <input
                           type="text"
-                          value={zodiacSign}
-                          readOnly
-                          className="read-only-input"
-                          style={{ background: 'rgba(0,0,0,0.05)', cursor: 'not-allowed' }}
+                          value={hobby}
+                          onChange={(event) => setHobby(event.target.value)}
+                          placeholder={lang === 'ko' ? "예: 골프, 테니스" : "e.g. Golf"}
                         />
                       </label>
                     </div>
