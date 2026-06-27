@@ -18,6 +18,7 @@ export default function Header() {
         </button>
         <nav className={`header-nav${menuOpen ? ' open' : ''}`}>
           <Link to="/" onClick={() => setMenuOpen(false)}>홈</Link>
+          <Link to="/wiki" onClick={() => setMenuOpen(false)}>사주 백과</Link>
           <Link to="/about" onClick={() => setMenuOpen(false)}>서비스 소개</Link>
           <Link to="/privacy" onClick={() => setMenuOpen(false)}>개인정보처리방침</Link>
           <Link to="/terms" onClick={() => setMenuOpen(false)}>이용약관</Link>

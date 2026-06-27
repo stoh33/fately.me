@@ -7,6 +7,8 @@ import PrivacyPolicy from './pages/policy/PrivacyPolicy.tsx'
 import TermsOfService from './pages/policy/TermsOfService.tsx'
 import AboutUs from './pages/policy/AboutUs.tsx'
 import ContactUs from './pages/policy/ContactUs.tsx'
+import WikiPage from './pages/WikiPage.tsx'
+import WikiDetailPage from './pages/WikiDetailPage.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -18,6 +20,8 @@ createRoot(document.getElementById('root')!).render(
         <Route path="/terms" element={<TermsOfService />} />
         <Route path="/about" element={<AboutUs />} />
         <Route path="/contact" element={<ContactUs />} />
+        <Route path="/wiki" element={<WikiPage />} />
+        <Route path="/wiki/:id" element={<WikiDetailPage />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>,

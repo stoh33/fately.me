@@ -1,0 +1,598 @@
+/* Wiki Page premium styles */
+
+.wiki-hero {
+  background: linear-gradient(135deg, #0f0c1b 0%, #191970 50%, #2e1a47 100%);
+  color: var(--white);
+  padding: 4rem 1.5rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  border-bottom: 2px solid var(--secondary);
+  box-shadow: inset 0 -10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.wiki-hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 70% 30%, rgba(127, 255, 212, 0.15) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.wiki-hero-content {
+  max-width: 800px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+.wiki-hero-subtitle {
+  font-family: "Cinzel", serif;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: var(--secondary);
+  display: block;
+  margin-bottom: 0.75rem;
+  font-weight: 700;
+  text-shadow: 0 0 8px rgba(127, 255, 212, 0.4);
+}
+
+.wiki-hero-title {
+  font-family: "Cinzel", "Noto Serif KR", serif;
+  font-size: 2.75rem;
+  font-weight: 700;
+  margin: 0 0 1.25rem 0;
+  letter-spacing: -0.5px;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
+}
+
+.wiki-hero-desc {
+  font-family: "Noto Sans KR", sans-serif;
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.85);
+  margin: 0;
+  font-weight: 400;
+}
+
+.wiki-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 3rem 1.5rem;
+}
+
+/* Controls */
+.wiki-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.wiki-search-box {
+  position: relative;
+  width: 100%;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.search-icon {
+  position: absolute;
+  left: 1.25rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.2rem;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.wiki-search-input {
+  width: 100%;
+  padding: 1rem 3rem 1rem 3.25rem;
+  border-radius: 50px;
+  border: 1.5px solid #dcdcdc;
+  background: var(--white);
+  color: var(--text);
+  font-size: 1rem;
+  outline: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+.wiki-search-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 4px 20px rgba(25, 25, 112, 0.1);
+}
+
+.wiki-search-clear {
+  position: absolute;
+  right: 1.25rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  font-size: 1rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 4px;
+}
+
+.wiki-search-clear:hover {
+  color: var(--text);
+}
+
+.wiki-category-tabs {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.wiki-category-tab {
+  padding: 0.6rem 1.25rem;
+  border-radius: 30px;
+  border: 1px solid #e0e0e0;
+  background: var(--white);
+  color: var(--text-muted);
+  font-weight: 500;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.wiki-category-tab:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: rgba(25, 25, 112, 0.02);
+}
+
+.wiki-category-tab.active {
+  background: var(--primary);
+  color: var(--white);
+  border-color: var(--primary);
+  box-shadow: 0 4px 10px rgba(25, 25, 112, 0.2);
+}
+
+.wiki-results-count {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-bottom: 1.5rem;
+}
+
+.wiki-results-count span {
+  color: var(--primary);
+  font-weight: 700;
+}
+
+/* Wiki Grid */
+.wiki-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 2rem;
+}
+
+.wiki-card {
+  background: var(--white);
+  border-radius: 16px;
+  border: 1px solid #e9ecef;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  overflow: hidden;
+  height: 100%;
+}
+
+.wiki-card:hover {
+  transform: translateY(-5px);
+  border-color: rgba(127, 255, 212, 0.6);
+  box-shadow: 0 12px 30px rgba(25, 25, 112, 0.08), 0 0 15px rgba(127, 255, 212, 0.15);
+}
+
+.wiki-card-body {
+  padding: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  flex-grow: 1;
+}
+
+.wiki-card-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  margin-bottom: 1rem;
+}
+
+.badge-blue {
+  background-color: rgba(25, 25, 112, 0.08);
+  color: var(--primary);
+}
+
+.badge-mint {
+  background-color: rgba(127, 255, 212, 0.15);
+  color: #008080;
+}
+
+.badge-amber {
+  background-color: #fef3c7;
+  color: #b45309;
+}
+
+.badge-purple {
+  background-color: #f3e8ff;
+  color: #7e22ce;
+}
+
+.wiki-card-title {
+  font-family: "Noto Serif KR", serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.45;
+  margin: 0 0 0.85rem 0;
+  color: #1a1a1a;
+  word-break: keep-all;
+}
+
+.wiki-card-summary {
+  font-size: 0.92rem;
+  line-height: 1.6;
+  color: #555;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.wiki-card-footer {
+  padding: 1.25rem 1.75rem;
+  border-top: 1px solid #f1f3f5;
+  background: #fdfdfd;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.wiki-card-meta {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.wiki-card-dot {
+  opacity: 0.5;
+}
+
+.wiki-card-more {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--primary);
+  transition: transform 0.2s ease;
+}
+
+.wiki-card:hover .wiki-card-more {
+  transform: translateX(4px);
+}
+
+/* Empty State */
+.wiki-empty {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: var(--white);
+  border-radius: 16px;
+  border: 1px dashed #ced4da;
+  max-width: 500px;
+  margin: 2rem auto;
+}
+
+.empty-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.wiki-empty h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.3rem;
+}
+
+.wiki-empty p {
+  color: var(--text-muted);
+  margin: 0 0 1.5rem 0;
+  font-size: 0.95rem;
+}
+
+.wiki-reset-btn {
+  background: var(--primary);
+  color: var(--white);
+  border: none;
+  padding: 0.75rem 1.75rem;
+  border-radius: 30px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.wiki-reset-btn:hover {
+  background: #0f0c3b;
+}
+
+/* Wiki Detail styles */
+.wiki-detail-wrapper {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem;
+}
+
+.wiki-detail-header-nav {
+  margin-bottom: 1.5rem;
+}
+
+.wiki-back-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 0;
+  transition: color 0.2s;
+}
+
+.wiki-back-btn:hover {
+  color: var(--primary);
+}
+
+.wiki-detail-card {
+  background: var(--white);
+  border-radius: 20px;
+  border: 1px solid #e9ecef;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+  padding: 3rem 2.5rem;
+  overflow: hidden;
+}
+
+.wiki-detail-header {
+  margin-bottom: 2.5rem;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.wiki-detail-title {
+  font-family: "Noto Serif KR", serif;
+  font-size: 2.25rem;
+  font-weight: 700;
+  line-height: 1.35;
+  color: #111;
+  margin: 0.75rem 0 1.25rem 0;
+  word-break: keep-all;
+}
+
+.wiki-detail-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  margin-bottom: 1.5rem;
+}
+
+.wiki-detail-divider {
+  opacity: 0.3;
+}
+
+.wiki-detail-summary {
+  background: #f8f9fa;
+  border-left: 4px solid var(--primary);
+  padding: 1.25rem;
+  border-radius: 0 8px 8px 0;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #495057;
+  width: 100%;
+}
+
+.wiki-detail-summary strong {
+  color: var(--primary);
+}
+
+/* Custom Markdown Rendering Styles */
+.wiki-markdown-body {
+  font-size: 1.05rem;
+  line-height: 1.85;
+  color: #333;
+}
+
+.wiki-md-h2 {
+  font-family: "Noto Serif KR", serif;
+  font-size: 1.65rem;
+  color: #111;
+  margin: 3rem 0 1.25rem 0;
+  border-bottom: 1.5px solid #eaeaea;
+  padding-bottom: 0.5rem;
+}
+
+.wiki-md-h3 {
+  font-family: "Noto Serif KR", serif;
+  font-size: 1.3rem;
+  color: #222;
+  margin: 2rem 0 1rem 0;
+}
+
+.wiki-md-h4 {
+  font-family: "Noto Serif KR", serif;
+  font-size: 1.15rem;
+  color: #333;
+  margin: 1.5rem 0 0.75rem 0;
+}
+
+.wiki-md-p {
+  margin: 0 0 1.25rem 0;
+  text-align: justify;
+}
+
+.wiki-md-ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+  margin: 0 0 1.5rem 0;
+}
+
+.wiki-md-ul li {
+  margin-bottom: 0.6rem;
+}
+
+.wiki-md-ol {
+  list-style-type: decimal;
+  padding-left: 1.5rem;
+  margin: 0 0 1.5rem 0;
+}
+
+.wiki-md-ol li {
+  margin-bottom: 0.6rem;
+}
+
+.wiki-md-hr {
+  border: none;
+  border-top: 1px solid #eaeaea;
+  margin: 2.5rem 0;
+}
+
+.wiki-markdown-body strong {
+  color: #000;
+  font-weight: 700;
+}
+
+.wiki-markdown-body em {
+  font-style: italic;
+  color: var(--text-muted);
+}
+
+.wiki-detail-footer {
+  margin-top: 4rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #eee;
+}
+
+.wiki-share-info {
+  background: rgba(25, 25, 112, 0.02);
+  border: 1px solid rgba(25, 25, 112, 0.05);
+  border-radius: 8px;
+  padding: 1rem;
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+/* Page Navigation */
+.wiki-page-navigation {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-top: 2.5rem;
+}
+
+.wiki-nav-link {
+  flex: 1;
+  background: var(--white);
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+  padding: 1.25rem;
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.25s ease;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+}
+
+.wiki-nav-link:hover {
+  border-color: var(--primary);
+  box-shadow: 0 4px 15px rgba(25, 25, 112, 0.06);
+}
+
+.wiki-nav-link.prev {
+  align-items: flex-start;
+}
+
+.wiki-nav-link.next {
+  align-items: flex-end;
+  text-align: right;
+}
+
+.nav-dir {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 0.4rem;
+}
+
+.nav-title {
+  font-family: "Noto Serif KR", serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  word-break: keep-all;
+}
+
+.wiki-nav-link-empty {
+  flex: 1;
+}
+
+.wiki-not-found {
+  text-align: center;
+  padding: 6rem 2rem;
+}
+
+.wiki-not-found h2 {
+  font-family: "Noto Serif KR", serif;
+  margin: 0 0 0.75rem 0;
+}
+
+.wiki-not-found p {
+  color: var(--text-muted);
+  margin: 0 0 2rem 0;
+}
+
+/* Responsive adjustment */
+@media (max-width: 768px) {
+  .wiki-hero {
+    padding: 3rem 1.25rem;
+  }
+  .wiki-hero-title {
+    font-size: 2rem;
+  }
+  .wiki-detail-card {
+    padding: 2rem 1.25rem;
+  }
+  .wiki-detail-title {
+    font-size: 1.75rem;
+  }
+  .wiki-page-navigation {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .wiki-nav-link-empty {
+    display: none;
+  }
+}

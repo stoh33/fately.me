@@ -10,6 +10,7 @@ export default function Footer() {
           <p className="text-sm">문의: jyleem78@naver.com</p>
         </div>
         <nav className="footer-nav">
+          <Link to="/wiki">사주 백과</Link>
           <Link to="/about">서비스 소개</Link>
           <Link to="/privacy">개인정보처리방침</Link>
           <Link to="/terms">이용약관</Link>
