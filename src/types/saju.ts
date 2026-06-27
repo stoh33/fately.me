@@ -78,5 +78,6 @@ export type SajuChartData = {
 
 export type BloodType = 'A' | 'B' | 'O' | 'AB' | 'unknown';
 export type ZodiacSign = string;
-export type CalendarType = 'solar' | 'lunar';
+export type CalendarType = 'solar' | 'lunar' | 'lunar-leap';
 export type Gender = 'male' | 'female' | 'other';
+

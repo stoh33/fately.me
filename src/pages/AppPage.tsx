@@ -62,7 +62,8 @@ const copy = {
     bloodO: 'O형',
     bloodAB: 'AB형',
     calendarSolar: '양력',
-    calendarLunar: '음력',
+    calendarLunar: '음력 (평달)',
+    calendarLunarLeap: '음력 (윤달)',
     cta: '사주 보기',
     loading: '보고서 생성 중...',
     reset: '다시 입력',
@@ -107,7 +108,8 @@ const copy = {
     bloodO: 'Type O',
     bloodAB: 'Type AB',
     calendarSolar: 'Solar',
-    calendarLunar: 'Lunar',
+    calendarLunar: 'Lunar (Regular)',
+    calendarLunarLeap: 'Lunar (Leap)',
     cta: 'View Saju',
     loading: 'Generating report...',
     reset: 'Reset',
@@ -338,7 +340,7 @@ function App() {
 
   const currentAge = useMemo(() => {
     if (!lastPayload) return null
-    if (lastPayload.birthCalendar === 'lunar') return null
+    if (lastPayload.birthCalendar === 'lunar' || lastPayload.birthCalendar === 'lunar-leap') return null
     const year = Number(lastPayload.birthYear)
     const month = Number(lastPayload.birthMonth)
     const day = Number(lastPayload.birthDay)
@@ -413,9 +415,16 @@ function App() {
         setMeta(data.meta)
       }
     } catch (submitError) {
-      setError(
-        submitError instanceof Error ? submitError.message : 'Failed to generate report.',
-      )
+      const errMsg = submitError instanceof Error ? submitError.message : 'Failed to generate report.'
+      if (errMsg === 'INVALID_LEAP_MONTH') {
+        const alertMsg = lang === 'ko'
+          ? '선택하신 연도와 월에는 음력 윤달이 존재하지 않습니다. 윤달 여부를 다시 확인해 주세요.'
+          : 'The selected year and month do not have a lunar leap month. Please verify the leap month selection.'
+        alert(alertMsg)
+        setError(lang === 'ko' ? '윤달을 다시 확인하세요.' : 'Please check the leap month.')
+      } else {
+        setError(errMsg)
+      }
     } finally {
       setIsLoading(false)
     }
@@ -649,6 +658,7 @@ function App() {
                   <select name="birthCalendar" defaultValue="solar" required>
                     <option value="solar">{t.calendarSolar}</option>
                     <option value="lunar">{t.calendarLunar}</option>
+                    <option value="lunar-leap">{t.calendarLunarLeap}</option>
                   </select>
                 </label>
               </div>

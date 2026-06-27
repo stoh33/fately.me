@@ -24,6 +24,7 @@ const cases = [
   { birthDate: '1990-03-15', birthTime: '11:20', timeUnknown: false, calendarType: 'solar', timezone: 'Asia/Seoul' },
   { birthDate: '1988-12-01', birthTime: null, timeUnknown: true, calendarType: 'solar', timezone: 'Asia/Seoul' },
   { birthDate: '2001-07-21', birthTime: '23:40', timeUnknown: false, calendarType: 'lunar', timezone: 'Asia/Seoul' },
+  { birthDate: '2001-07-21', birthTime: '23:40', timeUnknown: false, calendarType: 'lunar-leap', timezone: 'Asia/Seoul' },
 ]
 
 for (const item of cases) {

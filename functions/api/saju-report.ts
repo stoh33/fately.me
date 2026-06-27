@@ -82,17 +82,25 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
     return jsonResponse(400, { error: 'Invalid body' }, origin, env.ALLOWED_ORIGINS)
   }
 
+  const calendarType = (body.calendarType || 'solar') as CalendarType
+  const zodiacData = getZodiacSign(body.birthDate, calendarType)
+  const selectedZodiac =
+    body.zodiacSign && body.zodiacSign !== 'auto' ? String(body.zodiacSign) : zodiacData.ko
+
   let computed: ReturnType<typeof computeSaju>
   try {
     computed = computeSaju({
       birthDate: body.birthDate,
       birthTime: body.timeUnknown ? null : body.birthTime,
       timeUnknown: !!body.timeUnknown,
-      calendarType: (body.calendarType || 'solar') as CalendarType,
+      calendarType: calendarType,
       timezone: body.timezone || 'Asia/Seoul',
+      bloodType: body.bloodType || 'unknown',
+      zodiac: selectedZodiac,
     })
-  } catch {
-    return jsonResponse(400, { error: '사주 계산 실패' }, origin, env.ALLOWED_ORIGINS)
+  } catch (err: any) {
+    const errorMsg = err.message === 'INVALID_LEAP_MONTH' ? 'INVALID_LEAP_MONTH' : '사주 계산 실패';
+    return jsonResponse(400, { error: errorMsg, detail: err.message }, origin, env.ALLOWED_ORIGINS)
   }
 
   const apiKey = env.OPENAI_API_KEY;
@@ -156,10 +164,6 @@ ${body.notes ? `### 6. 추가 질문 답변
 
   const currentYear = new Date().getFullYear()
   const currentYearGanji = getSexagenaryYear(currentYear)
-  
-  const zodiacData = getZodiacSign(body.birthDate, (body.calendarType || 'solar') as CalendarType)
-  const selectedZodiac =
-    body.zodiacSign && body.zodiacSign !== 'auto' ? String(body.zodiacSign) : zodiacData.ko
 
   const isEn = body.lang === 'en'
   const hobby = body.hobby || (isEn ? 'Golf' : '골프')
@@ -194,7 +198,7 @@ ${body.notes ? `### 6. 추가 질문 답변
        6) Saju & Zodiac Cross-Analysis
        7) Blood Type Personality
        8) Saju & Blood Type Cross-Analysis
-       9) Integrated MBTI Estimation
+       9) Integrated MBTI Estimation: State the estimated MBTI as exactly **${computed.estimatedMBTI}**. Explain the reasoning logically based on the client's Saju, zodiac, and blood type.
        10) Saju-based ${hobby} Analysis (Strengths, Areas for Improvement, Recommended Styles)
        11) Answers to Additional Notes/Questions: "${body.notes || 'None'}"
        12) Conclusion (5 lines summary)`
@@ -231,7 +235,7 @@ ${body.notes ? `### 6. 추가 질문 답변
   - 차이점(최소 2개)
   - 보완점(최소 3개)
 11. 종합 분석 기반 추정 MBTI
-  - 사주, 별자리, 혈액형의 성향을 통합적으로 분석하여 가장 가능성 높은 MBTI 유형 1가지를 제시하고 그 이유를 3~4줄로 설명
+  - 이번 분석 결과 추정되는 MBTI는 **${computed.estimatedMBTI}**입니다. 반드시 이 유형으로 확정하여 제시하고, 그 추정 이유를 사주, 별자리, 혈액형의 성향적 교차분석과 연계하여 3~4줄로 흥미롭고 상세히 설명해 주세요.
 12. 사주 기반 ${hobby} 분석
   - 강점, 개선점, 추천 스타일 형태로 정리
 13. 추가 메모 및 질문 답변

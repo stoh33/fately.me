@@ -15,7 +15,7 @@ import type {
 } from '../types/saju'
 import '../styles/saju-page.css'
 
-const STORAGE_KEY = 'sajuReport:last'
+
 
 /**
  * Calculates Western Zodiac sign based on month and day
@@ -107,7 +107,7 @@ export default function SajuPage() {
   const [birthDate, setBirthDate] = useState('')
   const [birthTime, setBirthTime] = useState('11:20')
   const [timeUnknown, setTimeUnknown] = useState(false)
-  const [calendarType, setCalendarType] = useState<'solar' | 'lunar'>('solar')
+  const [calendarType, setCalendarType] = useState<'solar' | 'lunar' | 'lunar-leap'>('solar')
   const [gender, setGender] = useState<'male' | 'female' | 'other'>('male')
   const [timezone] = useState('Asia/Seoul')
   const [notes, setNotes] = useState('')
@@ -165,26 +165,7 @@ export default function SajuPage() {
 
   const reportRef = useRef<HTMLElement>(null)
 
-  useEffect(() => {
-    const cached = localStorage.getItem(STORAGE_KEY)
-    if (!cached) return
-    try {
-      const parsed = JSON.parse(cached) as {
-        reportMarkdown?: string
-        fiveElements?: Record<string, { count?: number; strength?: string }>
-        fourPillars?: FourPillars
-      }
-      if (parsed.reportMarkdown) {
-        setReportMarkdown(parsed.reportMarkdown)
-      }
-      setFiveElements(normalizeFiveElements(parsed.fiveElements))
-      if (parsed.fourPillars) {
-        setFourPillars(parsed.fourPillars)
-      }
-    } catch {
-      localStorage.removeItem(STORAGE_KEY)
-    }
-  }, [])
+
 
   const birthTimeValue = useMemo(() => (timeUnknown ? null : birthTime), [timeUnknown, birthTime])
 
@@ -247,17 +228,18 @@ export default function SajuPage() {
         setFourPillars(data.meta.fourPillars)
       }
       
-      localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify({
-          reportMarkdown: data.reportMarkdown,
-          fiveElements: normalizedFiveElements,
-          fourPillars: data.meta?.fourPillars,
-          savedAt: new Date().toISOString(),
-        }),
-      )
+
     } catch (submitError) {
-      setError(submitError instanceof Error ? submitError.message : '요청 실패')
+      const errMsg = submitError instanceof Error ? submitError.message : '요청 실패'
+      if (errMsg === 'INVALID_LEAP_MONTH') {
+        const alertMsg = lang === 'ko'
+          ? '선택하신 연도와 월에는 음력 윤달이 존재하지 않습니다. 윤달 여부를 다시 확인해 주세요.'
+          : 'The selected year and month do not have a lunar leap month. Please verify the leap month selection.'
+        alert(alertMsg)
+        setError(lang === 'ko' ? '윤달을 다시 확인하세요.' : 'Please check the leap month.')
+      } else {
+        setError(errMsg)
+      }
     } finally {
       setIsLoading(false)
     }
@@ -405,10 +387,11 @@ export default function SajuPage() {
                         <span>{lang === 'ko' ? '달력' : 'Calendar'}</span>
                         <select
                           value={calendarType}
-                          onChange={(event) => setCalendarType(event.target.value as 'solar' | 'lunar')}
+                          onChange={(event) => setCalendarType(event.target.value as 'solar' | 'lunar' | 'lunar-leap')}
                         >
                           <option value="solar">{lang === 'ko' ? '양력' : 'Solar'}</option>
-                          <option value="lunar">{lang === 'ko' ? '음력' : 'Lunar'}</option>
+                          <option value="lunar">{lang === 'ko' ? '음력 (평달)' : 'Lunar (Regular)'}</option>
+                          <option value="lunar-leap">{lang === 'ko' ? '음력 (윤달)' : 'Lunar (Leap)'}</option>
                         </select>
                       </label>
                       <div className="birth-split-container">

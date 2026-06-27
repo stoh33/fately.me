@@ -1,6 +1,6 @@
 import { Solar, Lunar } from 'lunar-typescript'
 
-export type CalendarType = 'solar' | 'lunar'
+export type CalendarType = 'solar' | 'lunar' | 'lunar-leap'
 
 export type SajuInput = {
   birthDate: string
@@ -9,6 +9,8 @@ export type SajuInput = {
   timeUnknown: boolean
   calendarType: CalendarType
   timezone: string
+  bloodType?: string | null
+  zodiac?: string | null
 }
 
 type ElementKey = '목' | '화' | '토' | '금' | '수'
@@ -41,6 +43,7 @@ export type SajuComputation = {
   fiveElements: Record<ElementKey, { count: number; strength: '강함' | '중간' | '약함' | '부족' }>
   yongsinSuggestion: ElementKey
   gisinSuggestion: ElementKey
+  estimatedMBTI: string
 }
 
 const ELEMENT_SYMBOL: Record<ElementKey, string> = {
@@ -150,9 +153,18 @@ export function computeSaju(input: SajuInput): SajuComputation {
   }
 
   let solar: Solar
-  if (input.calendarType === 'lunar') {
-    const lunar = Lunar.fromYmd(dateParts.year, dateParts.month, dateParts.day)
-    solar = lunar.getSolar()
+  if (input.calendarType === 'lunar' || input.calendarType === 'lunar-leap') {
+    const isLeap = input.calendarType === 'lunar-leap'
+    const monthVal = isLeap ? -dateParts.month : dateParts.month
+    try {
+      const lunar = Lunar.fromYmd(dateParts.year, monthVal, dateParts.day)
+      solar = lunar.getSolar()
+    } catch (err: any) {
+      if (err.message && err.message.includes('wrong lunar year') && err.message.includes('month -')) {
+        throw new Error('INVALID_LEAP_MONTH')
+      }
+      throw err
+    }
   } else {
     const time = parseBirthTime(timeStr || null)
     // Apply 30 minute offset for Korea (UTC+9 is 30 mins ahead of solar time at 127.5 longitude)
@@ -213,9 +225,21 @@ export function computeSaju(input: SajuInput): SajuComputation {
     (a, b) => elementCount[a] - elementCount[b],
   )
 
+  const elementsCount: Record<string, number> = {
+    목: elementCount.목,
+    화: elementCount.화,
+    토: elementCount.토,
+    금: elementCount.금,
+    수: elementCount.수,
+  }
+  const dayMasterStem = dayPillar.stem
+  const blood = input.bloodType || 'unknown'
+  const zodiacKo = input.zodiac || getZodiacSign(input.birthDate, input.calendarType).ko
+  const estimatedMBTI = estimateMBTI(elementsCount, dayMasterStem, blood, zodiacKo)
+
   return {
     adjustedBirthDate: `${solar.getYear()}-${pad(solar.getMonth())}-${pad(solar.getDay())}`,
-    calendarAssumptionNote: input.calendarType === 'lunar' ? '음력은 양력으로 변환 후 계산되었습니다.' : undefined,
+    calendarAssumptionNote: (input.calendarType === 'lunar' || input.calendarType === 'lunar-leap') ? `음력(${input.calendarType === 'lunar-leap' ? '윤달' : '평달'})은 양력으로 변환 후 계산되었습니다.` : undefined,
     year: yearPillar,
     month: monthPillar,
     day: dayPillar,
@@ -223,7 +247,84 @@ export function computeSaju(input: SajuInput): SajuComputation {
     fiveElements,
     yongsinSuggestion: sortedElements[0],
     gisinSuggestion: sortedElements[sortedElements.length - 1],
+    estimatedMBTI,
   }
+}
+
+export function estimateMBTI(
+  fiveElements: Record<string, number>,
+  dayMasterStem: string,
+  bloodType: string,
+  zodiac: string
+): string {
+  let eScore = 0
+  let sScore = 0
+  let tScore = 0
+  let jScore = 0
+
+  const wood = fiveElements['목'] || 0
+  const fire = fiveElements['화'] || 0
+  const earth = fiveElements['토'] || 0
+  const metal = fiveElements['금'] || 0
+  const water = fiveElements['수'] || 0
+
+  // E vs I
+  eScore += (wood * 1) + (fire * 2) - (earth * 1) - (metal * 2) - (water * 1)
+  // S vs N
+  sScore += (earth * 2) + (metal * 2) - (wood * 1) - (water * 2) - (fire * 1)
+  // T vs F
+  tScore += (metal * 2) + (water * 1) - (wood * 1) - (fire * 2)
+  // J vs P
+  jScore += (earth * 2) + (metal * 2) - (wood * 1) - (water * 2) - (fire * 1)
+
+  if (['갑', '을'].includes(dayMasterStem)) {
+    eScore += 1
+    tScore -= 1
+  } else if (['병', '정'].includes(dayMasterStem)) {
+    eScore += 2
+    tScore -= 2
+  } else if (dayMasterStem === '무') {
+    sScore += 1
+    tScore += 1
+  } else if (dayMasterStem === '기') {
+    sScore += 1
+    tScore -= 1
+  } else if (['경', '신'].includes(dayMasterStem)) {
+    eScore -= 2
+    tScore += 2
+    jScore += 1
+  } else if (['임', '계'].includes(dayMasterStem)) {
+    eScore -= 1
+    tScore += 1
+    jScore -= 1
+  }
+
+  const bloodNormalized = bloodType.toUpperCase()
+  if (bloodNormalized === 'O' || bloodNormalized === 'AB') eScore += 1
+  if (bloodNormalized === 'A') jScore += 1
+  if (bloodNormalized === 'B') jScore -= 1
+
+  const z = zodiac.replace('자리', '')
+  if (['황소', '처녀', '염소'].includes(z)) {
+    sScore += 1
+    jScore += 1
+  } else if (['양', '사자', '사수'].includes(z)) {
+    eScore += 1
+    tScore += 1
+  } else if (['쌍둥이', '천칭', '물병'].includes(z)) {
+    sScore -= 1
+    jScore -= 1
+  } else if (['게', '전갈', '물고기'].includes(z)) {
+    eScore -= 1
+    tScore -= 1
+  }
+
+  const E_I = eScore >= 0 ? 'E' : 'I'
+  const S_N = sScore >= 0 ? 'S' : 'N'
+  const T_F = tScore >= 0 ? 'T' : 'F'
+  const J_P = jScore >= 0 ? 'J' : 'P'
+
+  return E_I + S_N + T_F + J_P
 }
 
 export function getSexagenaryYear(year: number) {
@@ -254,9 +355,15 @@ export function getZodiacSign(birthDate: string, calendarType: CalendarType = 's
   if (parts.length !== 3) return { en: 'Unknown', ko: '미상' }
   
   let solar: Solar
-  if (calendarType === 'lunar') {
-    const lunar = Lunar.fromYmd(parts[0], parts[1], parts[2])
-    solar = lunar.getSolar()
+  if (calendarType === 'lunar' || calendarType === 'lunar-leap') {
+    const isLeap = calendarType === 'lunar-leap'
+    const monthVal = isLeap ? -parts[1] : parts[1]
+    try {
+      const lunar = Lunar.fromYmd(parts[0], monthVal, parts[2])
+      solar = lunar.getSolar()
+    } catch {
+      solar = Solar.fromYmd(parts[0], parts[1], parts[2])
+    }
   } else {
     solar = Solar.fromYmd(parts[0], parts[1], parts[2])
   }

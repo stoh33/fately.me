@@ -71,10 +71,23 @@ To test the application locally with full API functionality (OpenAI integration)
    ```
 3. **Access the App**: Open your browser and navigate to the address provided by Wrangler (usually `http://localhost:8888`). The frontend will be proxied to the local functions, allowing you to test the complete flow.
 
-## Current Plan: Deployment and Verification
-Finalizing the deployment after major code quality improvements and mobile optimization.
+## Current Plan: 사주 결과 캐싱 제거 및 MBTI 결정론적 추정 (Remove Caching & Deterministic MBTI)
 
-### Completed Steps
-1. **Code Refactoring**: Comprehensive fix for ESLint violations and type safety improvements.
-2. **Build Verification**: Success confirmed for both TypeScript compilation and Vite production build.
-3. **Mobile Optimization**: Verified responsiveness across various screen sizes.
+동일 입력 시 추정 MBTI가 변경되는 비결정론적 한계를 개선하기 위해 백엔드에서 사주 원국과 성향 정보를 기반으로 MBTI를 미리 계산하여 AI 모델 프롬프트에 확정 유형으로 지시하며, 로컬 캐시를 정리합니다.
+
+### Proposed Steps
+1. **타입 정의 수정**: [완료]
+2. **사주 계산 로직 수정**: [완료]
+3. **윤달 유효성 검증 로직 추가**: [완료]
+4. **프론트엔드 UI 및 경고창 추가**: [완료]
+5. **사주 결과 캐싱 제거**: [완료]
+6. **결정론적 MBTI 추정 로직 구현**:
+   - `functions/lib/saju-calculator.ts`에 오행(목/화/토/금/수) 비율, 일간(Day Master), 혈액형, 별자리를 종합 가중치로 채점하여 E/I, S/N, T/F, J/P를 결정하는 `estimateMBTI` 함수를 추가합니다.
+   - `SajuInput` 및 `SajuComputation` 규격에 `bloodType`, `zodiac`, `estimatedMBTI` 필드를 추가합니다.
+7. **API 및 AI 프롬프트 수정**:
+   - `functions/api/saju.ts` 및 `functions/api/saju-report.ts`에서 계산된 `estimatedMBTI` 값을 사용하여 프롬프트에 "추정 MBTI는 **{MBTI}**로 반드시 확정하고 이유를 설명할 것"을 지시하여 매번 결과가 일관되게 생성되도록 보장합니다.
+8. **검증**: 로컬 검증 및 빌드 테스트를 실행합니다.
+
+
+
+

@@ -82,24 +82,33 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
     })
   }
 
+  const birthDateStr = `${body.birthYear}-${String(body.birthMonth).padStart(2, '0')}-${String(body.birthDay).padStart(2, '0')}`
+  const birthCalendar = (body.birthCalendar || 'solar') as CalendarType
+  const zodiacData = getZodiacSign(birthDateStr, birthCalendar)
+  const zodiacKo = zodiacData.ko
+
   let computed: ReturnType<typeof computeSaju>
   try {
     computed = computeSaju({
-      birthDate: `${body.birthYear}-${String(body.birthMonth).padStart(2, '0')}-${String(body.birthDay).padStart(2, '0')}`,
+      birthDate: birthDateStr,
       birthHourBranch: body.birthHour,
       timeUnknown: !body.birthHour,
-      calendarType: (body.birthCalendar || 'solar') as CalendarType,
+      calendarType: birthCalendar,
       timezone: 'Asia/Seoul',
+      bloodType: body.bloodType || 'unknown',
+      zodiac: zodiacKo,
     })
-  } catch {
-    return new Response('Saju computation failed', { status: 400 })
+  } catch (err: any) {
+    const errorMsg = err.message === 'INVALID_LEAP_MONTH' ? 'INVALID_LEAP_MONTH' : 'Saju computation failed';
+    return new Response(JSON.stringify({ error: errorMsg, detail: err.message }), {
+      status: 400,
+      headers: {
+        ...corsHeaders,
+        ...buildCorsHeaders(origin, env.ALLOWED_ORIGINS),
+        'content-type': 'application/json',
+      }
+    })
   }
-
-  const zodiacData = getZodiacSign(
-    `${body.birthYear}-${String(body.birthMonth).padStart(2, '0')}-${String(body.birthDay).padStart(2, '0')}`,
-    (body.birthCalendar || 'solar') as CalendarType
-  )
-  const zodiacKo = zodiacData.ko
   const currentYear = new Date().getFullYear()
 
   const isEn = body.lang === 'en'
@@ -128,7 +137,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
        6) Saju & Zodiac Cross-Analysis
        7) Blood Type Personality
        8) Saju & Blood Type Cross-Analysis
-       9) Integrated MBTI Estimation
+       9) Integrated MBTI Estimation: State the estimated MBTI as exactly **${computed.estimatedMBTI}**. Explain the reasoning logically based on the client's Saju, zodiac, and blood type.
        10) Conclusion (5 lines)
        11) Saju-based ${hobby} Style & Advice (Last section, exclude specific training plans)`
     : `다음 정보를 바탕으로 사주 리포트를 작성해줘.
@@ -156,7 +165,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
    - 공통점 2개
    - 차이점 2개
    - 보완점 3개
-9) 종합 분석 기반 추정 MBTI (사주+별자리+혈액형 통합 결과)
+9) 종합 분석 기반 추정 MBTI: 이번 분석 결과 추정되는 MBTI는 **${computed.estimatedMBTI}**입니다. 반드시 이 유형으로 확정하여 제시하고, 그 추정 이유를 사주, 별자리, 혈액형의 성향적 교차분석과 연계하여 3~4줄로 흥미롭고 상세히 설명해 주세요.
 10) 종합 결론(5줄)
 11) 사주 맞춤 ${hobby} 스타일 & 보완점 (이 섹션은 마지막에 배치)
    - 추천 플레이 스타일 1가지
