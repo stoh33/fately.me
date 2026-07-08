@@ -5,6 +5,7 @@ import html2canvas from 'html2canvas'
 import Layout from '../components/Layout'
 import AdSense from '../components/AdSense'
 import SajuWongukTable from '../components/SajuWongukTable'
+import CharacterCardModal from '../components/CharacterCardModal'
 import type { 
   BloodType, 
   ZodiacSign, 
@@ -123,6 +124,9 @@ export default function SajuPage() {
   const [copied, setCopied] = useState(false)
   const [isCapturing, setIsCapturing] = useState(false)
   const [isGlow, setIsGlow] = useState(false)
+  const [estimatedMBTI, setEstimatedMBTI] = useState('')
+  const [dayMasterStem, setDayMasterStem] = useState('')
+  const [isCharModalOpen, setIsCharModalOpen] = useState(false)
 
   // Split Date/Time States
   const [birthYear, setBirthYear] = useState('1995')
@@ -226,6 +230,12 @@ export default function SajuPage() {
       setFiveElements(normalizedFiveElements)
       if (data.meta?.fourPillars) {
         setFourPillars(data.meta.fourPillars)
+      }
+      if (data.meta?.estimatedMBTI) {
+        setEstimatedMBTI(data.meta.estimatedMBTI)
+      }
+      if (data.meta?.dayMasterStem) {
+        setDayMasterStem(data.meta.dayMasterStem)
       }
       
 
@@ -508,6 +518,29 @@ export default function SajuPage() {
               >
                 <h2>{lang === 'ko' ? '사주 분석 리포트' : 'Analysis Report'}</h2>
             
+                {reportMarkdown && (
+                  <div 
+                    className="character-card-trigger-banner"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsCharModalOpen(true);
+                    }}
+                  >
+                    <div className="banner-left">
+                      <span className="banner-emoji">🔮</span>
+                      <div className="banner-text">
+                        <h4>{lang === 'ko' ? '나의 성격 & MBTI 캐릭터 카드 확인' : 'View My Personality & MBTI Card'}</h4>
+                        <p>
+                          {lang === 'ko' 
+                            ? '전통 사주와 MBTI의 신비로운 성향 분석 카드를 확인하고 저장해 보세요!' 
+                            : 'Explore and download your beautiful Saju & MBTI character profile!'}
+                        </p>
+                      </div>
+                    </div>
+                    <span className="banner-arrow">➔</span>
+                  </div>
+                )}
+
                 {reportMarkdown && <AdSense client="ca-pub-8118093904469504" slot="1122334455" />}
 
                 <div className="report-content">
@@ -563,6 +596,14 @@ export default function SajuPage() {
           </div>
         </main>
       </div>
+      <CharacterCardModal
+        isOpen={isCharModalOpen}
+        onClose={() => setIsCharModalOpen(false)}
+        dayMasterStem={dayMasterStem}
+        estimatedMBTI={estimatedMBTI}
+        clientName={clientName}
+        lang={lang}
+      />
     </Layout>
   )
 }

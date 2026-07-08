@@ -872,3 +872,375 @@
     padding: 40px 16px;
   }
 }
+
+/* Character & MBTI Card Popup Styles */
+
+.character-card-trigger-banner {
+  background: linear-gradient(135deg, #1e1b4b 0%, #311042 100%);
+  border: 1px solid rgba(127, 255, 212, 0.3);
+  border-radius: 16px;
+  padding: 18px 24px;
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: 0 4px 20px rgba(49, 16, 66, 0.15);
+  color: var(--white);
+}
+
+.character-card-trigger-banner:hover {
+  transform: translateY(-3px);
+  border-color: var(--secondary);
+  box-shadow: 0 10px 25px rgba(127, 255, 212, 0.2), 0 0 15px rgba(127, 255, 212, 0.1);
+}
+
+.banner-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.banner-emoji {
+  font-size: 2rem;
+  animation: float-emoji 3s ease-in-out infinite;
+}
+
+@keyframes float-emoji {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+.banner-text h4 {
+  margin: 0 0 4px;
+  font-size: 1.1rem;
+  font-family: "Noto Serif KR", serif;
+  font-weight: 700;
+  color: var(--secondary);
+}
+
+.banner-text p {
+  margin: 0;
+  font-size: 0.88rem;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.banner-arrow {
+  font-size: 1.2rem;
+  color: var(--secondary);
+  font-weight: 700;
+  transition: transform 0.2s ease;
+}
+
+.character-card-trigger-banner:hover .banner-arrow {
+  transform: translateX(5px);
+}
+
+/* Modal Overlay */
+.char-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(10, 8, 20, 0.85);
+  backdrop-filter: blur(8px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px;
+  animation: fade-in 0.3s ease-out;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.char-modal-container {
+  background-color: #0f0c1b;
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 30px rgba(127, 255, 212, 0.05);
+  max-width: 800px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  animation: scale-up 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  padding: 40px;
+}
+
+@keyframes scale-up {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.char-modal-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border: none;
+  color: rgba(255, 255, 255, 0.6);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  z-index: 10;
+}
+
+.char-modal-close:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: var(--white);
+  transform: rotate(90deg);
+}
+
+/* Integrated Card Area for Capture */
+.char-integrated-card {
+  background-color: #0d0a18;
+  border-radius: 20px;
+  border: 1.5px solid rgba(251, 191, 36, 0.2); /* elegant gold tint border */
+  padding: 36px;
+  position: relative;
+  overflow: hidden;
+  color: var(--white);
+  box-shadow: inset 0 0 40px rgba(251, 191, 36, 0.03);
+}
+
+.card-bg-decoration {
+  position: absolute;
+  top: -50px;
+  left: -50px;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(127, 255, 212, 0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.card-header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.card-brand {
+  font-family: "Cinzel", serif;
+  font-size: 0.8rem;
+  letter-spacing: 4px;
+  color: rgba(255, 255, 255, 0.4);
+  display: block;
+  margin-bottom: 6px;
+}
+
+.card-main-title {
+  font-family: "Noto Serif KR", serif;
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 0;
+  background: linear-gradient(135deg, #ffffff 0%, #fbbf24 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.card-header-divider {
+  width: 60px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #fbbf24, transparent);
+  margin: 16px auto 0;
+}
+
+.card-columns {
+  display: flex;
+  gap: 32px;
+  margin-bottom: 24px;
+}
+
+.card-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.col-header-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: rgba(255, 255, 255, 0.4);
+  margin-bottom: 16px;
+  font-weight: 600;
+}
+
+.char-visual-container {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  border: 2px solid;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.02);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+  transition: all 0.3s;
+}
+
+.char-svg {
+  width: 100%;
+  height: 100%;
+}
+
+.char-name {
+  font-family: "Noto Serif KR", serif;
+  font-size: 1.35rem;
+  font-weight: 700;
+  margin: 0 0 4px 0;
+}
+
+.char-subname {
+  font-size: 0.88rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0 0 16px 0;
+  font-weight: 500;
+}
+
+.chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.char-chip {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 12px;
+}
+
+.char-desc {
+  font-size: 0.88rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.75);
+  margin: 0;
+  text-align: justify;
+  word-break: keep-all;
+}
+
+.card-col-divider {
+  width: 1px;
+  background: linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+}
+
+.card-footer {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.card-footer-info {
+  margin: 0;
+  text-align: left;
+}
+
+.card-watermark {
+  font-family: "Cinzel", serif;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: rgba(255, 255, 255, 0.25);
+}
+
+/* Modal Actions */
+.char-modal-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 28px;
+  justify-content: center;
+}
+
+.btn-save-card {
+  flex: 1;
+  background: linear-gradient(135deg, #d97706 0%, #fbbf24 100%);
+  color: #0f0c1b;
+  border: none;
+  padding: 14px 28px;
+  border-radius: 12px;
+  font-weight: 800;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 4px 15px rgba(251, 191, 36, 0.25);
+}
+
+.btn-save-card:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(251, 191, 36, 0.35);
+  background: linear-gradient(135deg, #b45309 0%, #d97706 100%);
+  color: #fff;
+}
+
+.btn-close-modal {
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 14px 24px;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-close-modal:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: var(--white);
+}
+
+/* Responsive adjustment for integrated card modal */
+@media (max-width: 768px) {
+  .char-modal-container {
+    padding: 24px 16px;
+    border-radius: 20px;
+  }
+  .char-integrated-card {
+    padding: 24px 16px;
+  }
+  .card-columns {
+    flex-direction: column;
+    gap: 28px;
+  }
+  .card-col-divider {
+    height: 1px;
+    width: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  }
+  .card-footer {
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+    text-align: center;
+  }
+  .card-footer-info {
+    text-align: center;
+  }
+  .char-modal-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+  .btn-save-card, .btn-close-modal {
+    width: 100%;
+  }
+}

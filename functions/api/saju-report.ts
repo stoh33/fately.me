@@ -156,6 +156,8 @@ ${body.notes ? `### 6. 추가 질문 답변
       meta: {
         fourPillars: { year: computed.year, month: computed.month, day: computed.day, hour: computed.hour },
         fiveElements: computed.fiveElements,
+        estimatedMBTI: computed.estimatedMBTI,
+        dayMasterStem: computed.day.stem,
         generatedAt: new Date().toISOString(),
         provider: 'mock',
       },
@@ -260,6 +262,8 @@ ${body.notes ? `### 6. 추가 질문 답변
         meta: {
           fourPillars: { year: computed.year, month: computed.month, day: computed.day, hour: computed.hour },
           fiveElements: computed.fiveElements,
+          estimatedMBTI: computed.estimatedMBTI,
+          dayMasterStem: computed.day.stem,
           generatedAt: new Date().toISOString(),
           provider: 'openai',
         },

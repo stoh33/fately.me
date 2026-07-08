@@ -32,6 +32,8 @@ export type ReportResponse = {
   meta?: {
     fourPillars?: FourPillars;
     fiveElements?: Record<string, { count?: number; strength?: string }>;
+    estimatedMBTI?: string;
+    dayMasterStem?: string;
     generatedAt?: string;
   };
   error?: string;
@@ -43,6 +45,8 @@ export type ApiResponse = {
   meta?: {
     fourPillars?: FourPillars;
     fiveElements?: Record<string, { count?: number; strength?: string }>;
+    estimatedMBTI?: string;
+    dayMasterStem?: string;
     generatedAt?: string;
   };
   error?: string;

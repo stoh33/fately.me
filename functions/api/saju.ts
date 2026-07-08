@@ -185,6 +185,8 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
             hour: computed.hour,
           },
           fiveElements: computed.fiveElements,
+          estimatedMBTI: computed.estimatedMBTI,
+          dayMasterStem: computed.day.stem,
           generatedAt: new Date().toISOString(),
         },
       }),
