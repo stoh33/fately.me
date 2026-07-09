@@ -97,6 +97,8 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
       timezone: 'Asia/Seoul',
       bloodType: body.bloodType || 'unknown',
       zodiac: zodiacKo,
+      mbtiSelfEI: body.mbtiSelfEI || null,
+      mbtiSelfTF: body.mbtiSelfTF || null,
     })
   } catch (err) {
     const errorMsg = (err instanceof Error && err.message === 'INVALID_LEAP_MONTH') ? 'INVALID_LEAP_MONTH' : 'Saju computation failed';

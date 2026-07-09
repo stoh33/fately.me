@@ -97,6 +97,8 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
       timezone: body.timezone || 'Asia/Seoul',
       bloodType: body.bloodType || 'unknown',
       zodiac: selectedZodiac,
+      mbtiSelfEI: body.mbtiSelfEI || null,
+      mbtiSelfTF: body.mbtiSelfTF || null,
     })
   } catch (err) {
     const errorMsg = (err instanceof Error && err.message === 'INVALID_LEAP_MONTH') ? 'INVALID_LEAP_MONTH' : '사주 계산 실패';

@@ -11,6 +11,8 @@ export type SajuInput = {
   timezone: string
   bloodType?: string | null
   zodiac?: string | null
+  mbtiSelfEI?: string | null
+  mbtiSelfTF?: string | null
 }
 
 type ElementKey = '목' | '화' | '토' | '금' | '수'
@@ -243,7 +245,15 @@ export function computeSaju(input: SajuInput): SajuComputation {
     branches.push(hourPillar.branch)
   }
 
-  const estimatedMBTI = estimateMBTI(elementsCount, dayMasterStem, blood, zodiacKo, { stems, branches })
+  const estimatedMBTI = estimateMBTI(
+    elementsCount,
+    dayMasterStem,
+    blood,
+    zodiacKo,
+    { stems, branches },
+    input.mbtiSelfEI,
+    input.mbtiSelfTF
+  )
 
   return {
     adjustedBirthDate: `${solar.getYear()}-${pad(solar.getMonth())}-${pad(solar.getDay())}`,
@@ -336,7 +346,9 @@ export function estimateMBTI(
   dayMasterStem: string,
   bloodType: string,
   zodiac: string,
-  sajuStemsAndBranches: { stems: string[]; branches: string[] }
+  sajuStemsAndBranches: { stems: string[]; branches: string[] },
+  mbtiSelfEI?: string | null,
+  mbtiSelfTF?: string | null
 ): string {
   let eScore = 0
   let sScore = 0
@@ -455,6 +467,12 @@ export function estimateMBTI(
     eScore -= 1.0
     tScore -= 1.0
   }
+
+  // 6. MBTI 자가진단(선택 질문) 보정 가중치 추가
+  if (mbtiSelfEI === 'E') eScore += 5.0
+  if (mbtiSelfEI === 'I') eScore -= 5.0
+  if (mbtiSelfTF === 'T') tScore += 5.0
+  if (mbtiSelfTF === 'F') tScore -= 5.0
 
   const E_I = eScore >= 0 ? 'E' : 'I'
   const S_N = sScore >= 0 ? 'S' : 'N'

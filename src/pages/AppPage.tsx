@@ -380,6 +380,8 @@ function App() {
         gender: String(formData.get('gender') || ''),
         bloodType: String(formData.get('bloodType') || ''),
         hobby: String(formData.get('hobby') || ''),
+        mbtiSelfEI: String(formData.get('mbtiSelfEI') || ''),
+        mbtiSelfTF: String(formData.get('mbtiSelfTF') || ''),
       }
       setLastPayload({
         birthCalendar: payload.birthCalendar,
@@ -762,6 +764,25 @@ function App() {
                     <option value="B">{t.bloodB}</option>
                     <option value="O">{t.bloodO}</option>
                     <option value="AB">{t.bloodAB}</option>
+                  </select>
+                </label>
+              </div>
+              <div className="inline-group">
+                <label className="field">
+                  <span>{lang === 'ko' ? '에너지 충전 방식 (MBTI)' : 'Energy Recharge (MBTI)'}</span>
+                  <select name="mbtiSelfEI" defaultValue="">
+                    <option value="">{lang === 'ko' ? '선택 안함 (사주 기운 우선)' : 'Not Selected (Saju priority)'}</option>
+                    <option value="E">{lang === 'ko' ? '사람들과 함께 대화 (E)' : 'With others (E)'}</option>
+                    <option value="I">{lang === 'ko' ? '혼자 조용히 휴식 (I)' : 'Alone in quiet (I)'}</option>
+                  </select>
+                </label>
+
+                <label className="field">
+                  <span>{lang === 'ko' ? '의사결정 스타일 (MBTI)' : 'Decision Style (MBTI)'}</span>
+                  <select name="mbtiSelfTF" defaultValue="">
+                    <option value="">{lang === 'ko' ? '선택 안함 (사주 기운 우선)' : 'Not Selected (Saju priority)'}</option>
+                    <option value="T">{lang === 'ko' ? '객관적 사실과 논리 (T)' : 'Logic & Facts (T)'}</option>
+                    <option value="F">{lang === 'ko' ? '주변 공감과 감정 (F)' : 'Empathy & Feelings (F)'}</option>
                   </select>
                 </label>
               </div>

@@ -115,6 +115,8 @@ export default function SajuPage() {
   const [bloodType, setBloodType] = useState<BloodType>('unknown')
   const [zodiacSign, setZodiacSign] = useState<ZodiacSign>('auto')
   const [hobby, setHobby] = useState('')
+  const [mbtiSelfEI, setMbtiSelfEI] = useState<'E' | 'I' | ''>('')
+  const [mbtiSelfTF, setMbtiSelfTF] = useState<'T' | 'F' | ''>('')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
   const [reportMarkdown, setReportMarkdown] = useState('')
@@ -204,6 +206,8 @@ export default function SajuPage() {
           bloodType,
           zodiacSign,
           hobby,
+          mbtiSelfEI,
+          mbtiSelfTF,
         }),
       })
 
@@ -475,6 +479,31 @@ export default function SajuPage() {
                           onChange={(event) => setHobby(event.target.value)}
                           placeholder={lang === 'ko' ? "예: 골프, 테니스" : "e.g. Golf"}
                         />
+                      </label>
+                    </div>
+
+                    <div className="input-row">
+                      <label>
+                        <span>{lang === 'ko' ? '에너지 충전 방식 (MBTI)' : 'Energy Recharge (MBTI)'}</span>
+                        <select
+                          value={mbtiSelfEI}
+                          onChange={(event) => setMbtiSelfEI(event.target.value as 'E' | 'I' | '')}
+                        >
+                          <option value="">{lang === 'ko' ? '선택 안함 (사주 기운 우선)' : 'Not Selected (Saju priority)'}</option>
+                          <option value="E">{lang === 'ko' ? '사람들과 함께 대화 (E)' : 'With others (E)'}</option>
+                          <option value="I">{lang === 'ko' ? '혼자 조용히 휴식 (I)' : 'Alone in quiet (I)'}</option>
+                        </select>
+                      </label>
+                      <label>
+                        <span>{lang === 'ko' ? '의사결정 스타일 (MBTI)' : 'Decision Style (MBTI)'}</span>
+                        <select
+                          value={mbtiSelfTF}
+                          onChange={(event) => setMbtiSelfTF(event.target.value as 'T' | 'F' | '')}
+                        >
+                          <option value="">{lang === 'ko' ? '선택 안함 (사주 기운 우선)' : 'Not Selected (Saju priority)'}</option>
+                          <option value="T">{lang === 'ko' ? '객관적 사실과 논리 (T)' : 'Logic & Facts (T)'}</option>
+                          <option value="F">{lang === 'ko' ? '주변 공감과 감정 (F)' : 'Empathy & Feelings (F)'}</option>
+                        </select>
                       </label>
                     </div>
 
