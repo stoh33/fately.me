@@ -159,8 +159,8 @@ export function computeSaju(input: SajuInput): SajuComputation {
     try {
       const lunar = Lunar.fromYmd(dateParts.year, monthVal, dateParts.day)
       solar = lunar.getSolar()
-    } catch (err: any) {
-      if (err.message && err.message.includes('wrong lunar year') && err.message.includes('month -')) {
+    } catch (err) {
+      if (err instanceof Error && err.message.includes('wrong lunar year') && err.message.includes('month -')) {
         throw new Error('INVALID_LEAP_MONTH')
       }
       throw err
@@ -235,7 +235,15 @@ export function computeSaju(input: SajuInput): SajuComputation {
   const dayMasterStem = dayPillar.stem
   const blood = input.bloodType || 'unknown'
   const zodiacKo = input.zodiac || getZodiacSign(input.birthDate, input.calendarType).ko
-  const estimatedMBTI = estimateMBTI(elementsCount, dayMasterStem, blood, zodiacKo)
+
+  const stems = [yearPillar.stem, monthPillar.stem, dayPillar.stem]
+  const branches = [yearPillar.branch, monthPillar.branch, dayPillar.branch]
+  if (!('unknown' in hourPillar)) {
+    stems.push(hourPillar.stem)
+    branches.push(hourPillar.branch)
+  }
+
+  const estimatedMBTI = estimateMBTI(elementsCount, dayMasterStem, blood, zodiacKo, { stems, branches })
 
   return {
     adjustedBirthDate: `${solar.getYear()}-${pad(solar.getMonth())}-${pad(solar.getDay())}`,
@@ -251,11 +259,84 @@ export function computeSaju(input: SajuInput): SajuComputation {
   }
 }
 
+type YinYang = '양' | '음'
+type ElementType = '목' | '화' | '토' | '금' | '수'
+
+interface ElementInfo {
+  element: ElementType
+  polarity: YinYang
+}
+
+const STEM_DETAILS: Record<string, ElementInfo> = {
+  '갑': { element: '목', polarity: '양' },
+  '을': { element: '목', polarity: '음' },
+  '병': { element: '화', polarity: '양' },
+  '정': { element: '화', polarity: '음' },
+  '무': { element: '토', polarity: '양' },
+  '기': { element: '토', polarity: '음' },
+  '경': { element: '금', polarity: '양' },
+  '신': { element: '금', polarity: '음' },
+  '임': { element: '수', polarity: '양' },
+  '계': { element: '수', polarity: '음' },
+}
+
+const BRANCH_DETAILS: Record<string, ElementInfo> = {
+  '자': { element: '수', polarity: '음' },
+  '축': { element: '토', polarity: '음' },
+  '인': { element: '목', polarity: '양' },
+  '묘': { element: '목', polarity: '음' },
+  '진': { element: '토', polarity: '양' },
+  '사': { element: '화', polarity: '양' },
+  '오': { element: '화', polarity: '음' },
+  '미': { element: '토', polarity: '음' },
+  '신': { element: '금', polarity: '양' },
+  '유': { element: '금', polarity: '음' },
+  '술': { element: '토', polarity: '양' },
+  '해': { element: '수', polarity: '양' },
+}
+
+type ShiShen = '비견' | '겁재' | '식신' | '상관' | '편재' | '정재' | '편관' | '정관' | '편인' | '정인'
+
+const ELEMENT_RELATIONS: Record<ElementType, { 生: ElementType; 剋: ElementType }> = {
+  '목': { 生: '화', 剋: '토' },
+  '화': { 生: '토', 剋: '금' },
+  '토': { 生: '금', 剋: '수' },
+  '금': { 生: '수', 剋: '목' },
+  '수': { 生: '목', 剋: '화' },
+}
+
+function getShiShen(dayMaster: ElementInfo, target: ElementInfo): ShiShen {
+  const dmEl = dayMaster.element
+  const dmPol = dayMaster.polarity
+  const tgEl = target.element
+  const tgPol = target.polarity
+
+  const samePolarity = dmPol === tgPol
+
+  if (dmEl === tgEl) {
+    return samePolarity ? '비견' : '겁재'
+  }
+  if (ELEMENT_RELATIONS[dmEl].生 === tgEl) {
+    return samePolarity ? '식신' : '상관'
+  }
+  if (ELEMENT_RELATIONS[dmEl].剋 === tgEl) {
+    return samePolarity ? '편재' : '정재'
+  }
+  if (ELEMENT_RELATIONS[tgEl].剋 === dmEl) {
+    return samePolarity ? '편관' : '정관'
+  }
+  if (ELEMENT_RELATIONS[tgEl].生 === dmEl) {
+    return samePolarity ? '편인' : '정인'
+  }
+  return '비견'
+}
+
 export function estimateMBTI(
   fiveElements: Record<string, number>,
   dayMasterStem: string,
   bloodType: string,
-  zodiac: string
+  zodiac: string,
+  sajuStemsAndBranches: { stems: string[]; branches: string[] }
 ): string {
   let eScore = 0
   let sScore = 0
@@ -268,15 +349,13 @@ export function estimateMBTI(
   const metal = fiveElements['금'] || 0
   const water = fiveElements['수'] || 0
 
-  // E vs I
-  eScore += (wood * 1) + (fire * 2) - (earth * 1) - (metal * 2) - (water * 1)
-  // S vs N
-  sScore += (earth * 2) + (metal * 2) - (wood * 1) - (water * 2) - (fire * 1)
-  // T vs F
-  tScore += (metal * 2) + (water * 1) - (wood * 1) - (fire * 2)
-  // J vs P
-  jScore += (earth * 2) + (metal * 2) - (wood * 1) - (water * 2) - (fire * 1)
+  // 1. 오행 기본 점수 (오행 고유의 성정 배정)
+  eScore += (wood * 1.0) + (fire * 1.5) - (earth * 0.5) - (metal * 1.5) - (water * 0.5)
+  sScore += (earth * 1.5) + (metal * 1.0) - (wood * 0.5) - (water * 1.5) - (fire * 0.5)
+  tScore += (metal * 1.5) + (water * 0.5) - (wood * 0.5) - (fire * 1.5)
+  jScore += (earth * 1.5) + (metal * 1.5) - (wood * 0.5) - (water * 1.5) - (fire * 0.5)
 
+  // 2. 일간(Day Master) 가중치 보정
   if (['갑', '을'].includes(dayMasterStem)) {
     eScore += 1
     tScore -= 1
@@ -299,24 +378,82 @@ export function estimateMBTI(
     jScore -= 1
   }
 
-  const bloodNormalized = bloodType.toUpperCase()
-  if (bloodNormalized === 'O' || bloodNormalized === 'AB') eScore += 1
-  if (bloodNormalized === 'A') jScore += 1
-  if (bloodNormalized === 'B') jScore -= 1
+  // 3. 십성(十星) 계산 및 가중치 합산 (정밀 보정)
+  const dmInfo = STEM_DETAILS[dayMasterStem]
+  if (dmInfo) {
+    const shishenCounts: Record<ShiShen, number> = {
+      '비견': 0, '겁재': 0, '식신': 0, '상관': 0, '편재': 0,
+      '정재': 0, '편관': 0, '정관': 0, '편인': 0, '정인': 0
+    }
 
+    // 천간 십성 계산 (일간 자신은 제외)
+    sajuStemsAndBranches.stems.forEach((stem, idx) => {
+      // 일간(3번째 글자, index 2)은 제외
+      if (idx === 2) return
+      const targetInfo = STEM_DETAILS[stem]
+      if (targetInfo) {
+        shishenCounts[getShiShen(dmInfo, targetInfo)] += 1
+      }
+    })
+
+    // 지지 십성 계산
+    sajuStemsAndBranches.branches.forEach((branch) => {
+      const targetInfo = BRANCH_DETAILS[branch]
+      if (targetInfo) {
+        shishenCounts[getShiShen(dmInfo, targetInfo)] += 1
+      }
+    })
+
+    // 십성별 MBTI 성향 가중치 결합
+    // 비겁 (비견/겁재): 주체성, 강한 자아
+    const bigeob = shishenCounts['비견'] + shishenCounts['겁재']
+    eScore += bigeob * 1.5
+    tScore += bigeob * 0.8
+
+    // 식상 (식신/상관): 표현력, 자유로움, 예술성
+    const sikshang = shishenCounts['식신'] + shishenCounts['상관']
+    eScore += sikshang * 1.8
+    sScore -= sikshang * 1.2 // N 성향
+    jScore -= sikshang * 2.2 // P 성향
+
+    // 재성 (편재/정재): 현실 감각, 실리성, 계획
+    const jaeseong = shishenCounts['편재'] + shishenCounts['정재']
+    sScore += jaeseong * 2.0
+    jScore += jaeseong * 1.2
+
+    // 관성 (편관/정관): 조직 규율, 통제, 책임감
+    const gwanseong = shishenCounts['편관'] + shishenCounts['정관']
+    tScore += gwanseong * 1.5
+    jScore += gwanseong * 2.2
+
+    // 인성 (편인/정인): 깊은 생각, 직관, 수용성
+    const inseong = shishenCounts['편인'] + shishenCounts['정인']
+    eScore -= inseong * 2.2 // I 성향
+    sScore -= inseong * 1.8 // N 성향
+    tScore -= shishenCounts['정인'] * 1.5 // 정인은 타인 공감 F 유도
+    tScore += shishenCounts['편인'] * 0.5 // 편인은 의심/비판적 사고 T 유도
+  }
+
+  // 4. 혈액형 가중치 보정
+  const bloodNormalized = bloodType.toUpperCase()
+  if (bloodNormalized === 'O' || bloodNormalized === 'AB') eScore += 1.0
+  if (bloodNormalized === 'A') jScore += 1.2
+  if (bloodNormalized === 'B') jScore -= 1.2
+
+  // 5. 별자리 가중치 보정
   const z = zodiac.replace('자리', '')
   if (['황소', '처녀', '염소'].includes(z)) {
-    sScore += 1
-    jScore += 1
+    sScore += 1.0
+    jScore += 1.0
   } else if (['양', '사자', '사수'].includes(z)) {
-    eScore += 1
-    tScore += 1
+    eScore += 1.0
+    tScore += 1.0
   } else if (['쌍둥이', '천칭', '물병'].includes(z)) {
-    sScore -= 1
-    jScore -= 1
+    sScore -= 1.0
+    jScore -= 1.0
   } else if (['게', '전갈', '물고기'].includes(z)) {
-    eScore -= 1
-    tScore -= 1
+    eScore -= 1.0
+    tScore -= 1.0
   }
 
   const E_I = eScore >= 0 ? 'E' : 'I'

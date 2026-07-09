@@ -98,9 +98,10 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
       bloodType: body.bloodType || 'unknown',
       zodiac: selectedZodiac,
     })
-  } catch (err: any) {
-    const errorMsg = err.message === 'INVALID_LEAP_MONTH' ? 'INVALID_LEAP_MONTH' : '사주 계산 실패';
-    return jsonResponse(400, { error: errorMsg, detail: err.message }, origin, env.ALLOWED_ORIGINS)
+  } catch (err) {
+    const errorMsg = (err instanceof Error && err.message === 'INVALID_LEAP_MONTH') ? 'INVALID_LEAP_MONTH' : '사주 계산 실패';
+    const detailMsg = err instanceof Error ? err.message : String(err);
+    return jsonResponse(400, { error: errorMsg, detail: detailMsg }, origin, env.ALLOWED_ORIGINS)
   }
 
   const apiKey = env.OPENAI_API_KEY;

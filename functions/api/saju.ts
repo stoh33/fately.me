@@ -98,9 +98,10 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
       bloodType: body.bloodType || 'unknown',
       zodiac: zodiacKo,
     })
-  } catch (err: any) {
-    const errorMsg = err.message === 'INVALID_LEAP_MONTH' ? 'INVALID_LEAP_MONTH' : 'Saju computation failed';
-    return new Response(JSON.stringify({ error: errorMsg, detail: err.message }), {
+  } catch (err) {
+    const errorMsg = (err instanceof Error && err.message === 'INVALID_LEAP_MONTH') ? 'INVALID_LEAP_MONTH' : 'Saju computation failed';
+    const detailMsg = err instanceof Error ? err.message : String(err);
+    return new Response(JSON.stringify({ error: errorMsg, detail: detailMsg }), {
       status: 400,
       headers: {
         ...corsHeaders,
